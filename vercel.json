@@ -1,6 +1,6 @@
 {
   "buildCommand": "npm run build",
-  "outputDirectory": "dist/sentinel-crm",
+  "outputDirectory": "dist/sentinel-crm/browser",
   "rewrites": [
     {
       "source": "/(.*)",
