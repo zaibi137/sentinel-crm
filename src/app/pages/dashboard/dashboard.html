@@ -1,0 +1,231 @@
+<div class="page-header" style="background: linear-gradient(90deg, #1f3a40 0%, #2c4e56 100%); padding: 10px 16px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(31,58,64,0.15);">
+  <h2 style="font-family: 'Poppins', sans-serif; font-size: 16px; font-weight: 700; color: #FFFFFF; margin: 0; letter-spacing: 0.5px;">Sales Executive Dashboard</h2>
+  <div style="display: flex; gap: 8px;">
+    <button (click)="openAddTaskForm()" class="secondary-btn-sm" type="button" style="padding: 6px 12px; font-size: 12px; font-weight: 600; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.15); color: #FFF; border-radius: 4px; cursor: pointer; transition: all 0.2s;">+ Create Task</button>
+    <button (click)="openAddLeadForm()" class="primary-btn-sm" type="button" style="padding: 6px 12px; font-size: 12px; font-weight: 600; border: 1px solid #15282c; background: #1f3a40; color: #FFF; border-radius: 4px; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">+ Add Deal</button>
+  </div>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 12px;">
+  <div style="display: flex; align-items: center; gap: 10px; background: #FFF; padding: 10px 12px; border-radius: 6px; border: 1px solid #E2E8F0; box-shadow: 0 1px 2px rgba(0,0,0,0.02);">
+    <div style="font-size: 18px; background: #EFF6FF; padding: 6px; border-radius: 6px;">📋</div>
+    <div>
+      <div style="font-size: 15px; font-weight: 700; color: #0F172A; line-height: 1.2;">{{ getTotalLeadsCount() }}</div>
+      <div style="font-size: 10px; font-weight: 600; color: #64748B; text-transform: uppercase; letter-spacing: 0.3px;">Total Leads</div>
+    </div>
+  </div>
+
+  <div style="display: flex; align-items: center; gap: 10px; background: #FFF; padding: 10px 12px; border-radius: 6px; border: 1px solid #E2E8F0; box-shadow: 0 1px 2px rgba(0,0,0,0.02);">
+    <div style="font-size: 18px; background: #FFFBEB; padding: 6px; border-radius: 6px;">💼</div>
+    <div>
+      <div style="font-size: 15px; font-weight: 700; color: #0F172A; line-height: 1.2;">AED {{ getPipelineValueSum().toLocaleString() }}</div>
+      <div style="font-size: 10px; font-weight: 600; color: #64748B; text-transform: uppercase; letter-spacing: 0.3px;">Open Pipeline</div>
+    </div>
+  </div>
+
+  <div style="display: flex; align-items: center; gap: 10px; background: #FFF; padding: 10px 12px; border-radius: 6px; border: 1px solid #E2E8F0; box-shadow: 0 1px 2px rgba(0,0,0,0.02);">
+    <div style="font-size: 18px; background: #F0FDF4; padding: 6px; border-radius: 6px;">💰</div>
+    <div>
+      <div style="font-size: 15px; font-weight: 700; color: #0F172A; line-height: 1.2;">AED {{ getWonRevenueSum().toLocaleString() }}</div>
+      <div style="font-size: 10px; font-weight: 600; color: #64748B; text-transform: uppercase; letter-spacing: 0.3px;">Closed Revenue</div>
+    </div>
+  </div>
+
+  <div style="display: flex; align-items: center; gap: 10px; background: #FFF; padding: 10px 12px; border-radius: 6px; border: 1px solid #E2E8F0; box-shadow: 0 1px 2px rgba(0,0,0,0.02);">
+    <div style="font-size: 18px; background: #F5F3FF; padding: 6px; border-radius: 6px;">📈</div>
+    <div>
+      <div style="font-size: 15px; font-weight: 700; color: #0F172A; line-height: 1.2;">{{ getConversionWinRate() }}%</div>
+      <div style="font-size: 10px; font-weight: 600; color: #64748B; text-transform: uppercase; letter-spacing: 0.3px;">Win Rate</div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="isTaskFormOpen" id="taskFormPanel" style="margin-bottom: 12px; background: #FFF; border: 1px solid #CBD5E1; border-radius: 6px; padding: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+  <h3 style="font-family: 'Poppins', sans-serif; font-size: 11px; color: #1F3A40; margin: 0 0 8px 0; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Create Operational Task</h3>
+  <div style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 8px; margin-bottom: 8px;">
+    <div>
+      <input type="text" [(ngModel)]="tForm.title" placeholder="Task heading note *" style="padding: 6px 10px; border: 1px solid #CBD5E1; border-radius: 4px; font-size: 12px; width: 100%;">
+      <span *ngIf="taskErrors.title" style="color: #DC2626; font-size: 10px; display: block; margin-top: 2px;">{{taskErrors.title}}</span>
+    </div>
+    <div>
+      <input type="text" [(ngModel)]="tForm.relatedTo" placeholder="Ref Code (e.g. LD-0001)" style="padding: 6px 10px; border: 1px solid #CBD5E1; border-radius: 4px; font-size: 12px; width: 100%;">
+    </div>
+    <div>
+      <input type="date" [(ngModel)]="tForm.dueDate" style="padding: 6px 10px; border: 1px solid #CBD5E1; border-radius: 4px; font-size: 12px; width: 100%;">
+      <span *ngIf="taskErrors.dueDate" style="color: #DC2626; font-size: 10px; display: block; margin-top: 2px;">{{taskErrors.dueDate}}</span>
+    </div>
+    <div>
+      <select [(ngModel)]="tForm.priority" style="padding: 6px 10px; border: 1px solid #CBD5E1; border-radius: 4px; font-size: 12px; background: #FFF; width: 100%; height: 29px;">
+        <option value="High">High</option>
+        <option value="Medium">Medium</option>
+        <option value="Low">Low</option>
+      </select>
+    </div>
+  </div>
+  <div style="display: flex; gap: 6px; justify-content: flex-end;">
+    <button (click)="isTaskFormOpen = false" type="button" style="padding: 5px 12px; border-radius: 4px; border: 1px solid #CBD5E1; background: #FFF; font-weight: 600; font-size: 12px; cursor: pointer; color: #475569;">Cancel</button>
+    <button (click)="saveTask()" type="button" style="padding: 5px 12px; border-radius: 4px; border: none; background: #1f3a40; color: #FFF; font-weight: 600; font-size: 12px; cursor: pointer;">Save Task</button>
+  </div>
+</div>
+
+<div *ngIf="isFormOpen" id="dealFormPanel" style="margin-bottom: 12px; background: #FFF; border: 1px solid #CBD5E1; border-radius: 6px; padding: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+  <h3 style="font-family: 'Poppins', sans-serif; font-size: 11px; color: #1F3A40; margin: 0 0 8px 0; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">{{ formTitle }}</h3>
+  <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 8px;">
+    <div>
+      <input type="text" [(ngModel)]="lForm.name" placeholder="Deal Name *" style="padding: 6px 10px; border: 1px solid #CBD5E1; border-radius: 4px; font-size: 12px; width: 100%;">
+      <span *ngIf="leadErrors.name" style="color: #DC2626; font-size: 10px; display: block; margin-top: 2px;">{{leadErrors.name}}</span>
+    </div>
+    <div>
+      <input type="text" [(ngModel)]="lForm.phone" placeholder="Phone (e.g. +971 50 000 0000) *" style="padding: 6px 10px; border: 1px solid #CBD5E1; border-radius: 4px; font-size: 12px; width: 100%;">
+      <span *ngIf="leadErrors.phone" style="color: #DC2626; font-size: 10px; display: block; margin-top: 2px;">{{leadErrors.phone}}</span>
+    </div>
+    <div>
+      <select [(ngModel)]="lForm.stage" style="padding: 6px 10px; border: 1px solid #CBD5E1; border-radius: 4px; font-size: 12px; background: #FFF; width: 100%; height: 29px;">
+        <option value="New">New</option>
+        <option value="Contacted">Contacted</option>
+        <option value="Proposal Sent">Proposal Sent</option>
+        <option value="Quotation">Quotation</option>
+        <option value="Negotiation">Negotiation</option>
+        <option value="Won">Won</option>
+        <option value="Lost">Lost</option>
+      </select>
+    </div>
+    <div>
+      <input type="number" [(ngModel)]="lForm.value" placeholder="Deal value (AED) *" style="padding: 6px 10px; border: 1px solid #CBD5E1; border-radius: 4px; font-size: 12px; width: 100%;">
+      <span *ngIf="leadErrors.value" style="color: #DC2626; font-size: 10px; display: block; margin-top: 2px;">{{leadErrors.value}}</span>
+    </div>
+  </div>
+  <div style="display: grid; grid-template-columns: 1fr 3fr; gap: 8px; margin-bottom: 10px;">
+    <div>
+      <select [(ngModel)]="lForm.lastInteraction" style="padding: 6px 10px; border: 1px solid #CBD5E1; border-radius: 4px; font-size: 12px; background: #FFF; width: 100%; height: 29px;">
+        <option value="Call">Call</option>
+        <option value="Meeting">Meeting</option>
+        <option value="Email">Email</option>
+      </select>
+    </div>
+    <div>
+      <input type="text" [(ngModel)]="lForm.interactionNotes" placeholder="What was discussed in this pipeline interaction update?" style="padding: 6px 10px; border: 1px solid #CBD5E1; border-radius: 4px; font-size: 12px; width: 100%;">
+    </div>
+  </div>
+  <div style="display: flex; gap: 8px; justify-content: flex-end;">
+    <button (click)="isFormOpen = false" type="button" style="padding: 5px 12px; border-radius: 4px; border: 1px solid #CBD5E1; background: #FFF; font-weight: 600; font-size: 12px; cursor: pointer; color: #475569;">Cancel</button>
+    <button (click)="saveLead()" type="button" style="padding: 5px 12px; border-radius: 4px; border: none; background: #1f3a40; color: #FFF; font-weight: 600; font-size: 12px; cursor: pointer;">Save Deal</button>
+  </div>
+</div>
+
+<div style="margin-bottom: 12px; background: #FFF; padding: 12px; border-radius: 6px; border: 1px solid #E2E8F0;">
+  <h3 style="font-family: 'Poppins', sans-serif; font-size: 12px; font-weight: 700; color: #1F3A40; margin: 0 0 8px 0; text-transform: uppercase; letter-spacing: 0.3px;">Visual Sales Stages Pipeline Board</h3>
+  
+  <!-- Changed grid-template-columns to repeat(7, 1fr) and added 'Proposal Sent' step into the workflow array loop -->
+  <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; align-items: start;">
+    <div *ngFor="let stage of ['New', 'Contacted', 'Proposal Sent', 'Quotation', 'Negotiation', 'Won', 'Lost']" 
+         [style.background]="stage === 'Won' ? '#F0FDF4' : (stage === 'Lost' ? '#FEF2F2' : '#F8FAFC')"
+         [style.border-color]="stage === 'Won' ? '#BBF7D0' : (stage === 'Lost' ? '#FECACA' : '#E2E8F0')"
+         style="border-radius: 6px; padding: 6px; border: 1px solid; min-height: 140px;">
+      
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.3px;"
+           [style.color]="stage === 'Won' ? '#166534' : (stage === 'Lost' ? '#991B1B' : '#475569')">
+        <span>{{ stage }}</span>
+        <span [style.background]="stage === 'Won' ? '#16a34a' : (stage === 'Lost' ? '#dc2626' : '#E2E8F0')"
+              [style.color]="stage === 'Won' || stage === 'Lost' ? '#FFF' : '#334155'"
+              style="padding: 1px 5px; border-radius: 10px; font-size: 9.5px; font-weight: 700;">
+          {{ getStageCount(stage) }}
+        </span>
+      </div>
+      
+      <div style="display: flex; flex-direction: column; gap: 4px;">
+        <div *ngFor="let lead of getLeadsByStage(stage)" 
+             (click)="openEditLeadForm(lead)" 
+             [style.border-left-color]="stage === 'Won' ? '#16a34a' : (stage === 'Lost' ? '#dc2626' : '#1f3a40')"
+             style="background: #FFF; border: 1px solid #E2E8F0; border-left: 3px solid; padding: 6px 8px; border-radius: 4px; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.02); transition: transform 0.15s ease;">
+          <div style="font-size: 11.5px; font-weight: 700; color: #0F172A; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ lead.name }}</div>
+          <div style="font-size: 10.5px; font-weight: 700; margin-top: 1px;" [style.color]="stage === 'Won' ? '#16a34a' : (stage === 'Lost' ? '#dc2626' : '#64748B')">
+            AED {{ lead.value.toLocaleString() }}
+          </div>
+          <div *ngIf="lead.stage === 'Proposal Sent'" style="margin-top: 4px; display: inline-block; font-size: 9px; padding: 1px 4px; background: #EEF2F6; color: #6366F1; border-radius: 3px; font-weight: 600; text-transform: uppercase;">Proposal Sent</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px;">
+  <div style="background: #FFF; padding: 12px; border-radius: 6px; border: 1px solid #E2E8F0;">
+    <h3 style="font-family: 'Poppins', sans-serif; font-size: 12px; font-weight: 700; color: #1F3A40; margin: 0 0 8px 0; text-transform: uppercase;">Lead Conversation Tracker</h3>
+    <div *ngFor="let type of ['Call', 'Meeting', 'Email']" style="margin-bottom: 8px;">
+      <div style="display: flex; justify-content: space-between; font-size: 11px; font-weight: 600; margin-bottom: 2px; color: #334155;">
+        <span>{{ type === 'Call' ? '📞 Calls' : type === 'Meeting' ? '🤝 Meetings' : '✉️ Emails' }} ({{ getInteractionCount(type) }})</span>
+        <span style="color: #1f3a40;">{{ getInteractionPercentage(type) }}%</span>
+      </div>
+      <div style="width: 100%; height: 6px; background: #F1F5F9; border-radius: 4px; overflow: hidden;">
+        <div style="height: 100%; background: #1f3a40; border-radius: 4px; transition: width 0.4s ease;" [style.width]="getInteractionWidth(type)"></div>
+      </div>
+    </div>
+  </div>
+
+  <div style="background: #FFF; padding: 12px; border-radius: 6px; border: 1px solid #E2E8F0;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+      <h3 style="font-family: 'Poppins', sans-serif; font-size: 12px; font-weight: 700; color: #1F3A40; margin: 0; text-transform: uppercase;">Upcoming Tasks</h3>
+      <div style="display: flex; gap: 2px; background: #F1F5F9; padding: 2px; border-radius: 4px;">
+        <button (click)="changeTaskSorting('priority')" [style.background]="taskSortCriterion === 'priority' ? '#FFFFFF' : 'transparent'" [style.box-shadow]="taskSortCriterion === 'priority' ? '0 1px 2px rgba(0,0,0,0.05)' : 'none'" style="border: none; padding: 3px 8px; font-size: 10px; font-weight: 600; border-radius: 3px; cursor: pointer; color: #334155;">By Priority</button>
+        <button (click)="changeTaskSorting('dueDate')" [style.background]="taskSortCriterion === 'dueDate' ? '#FFFFFF' : 'transparent'" [style.box-shadow]="taskSortCriterion === 'dueDate' ? '0 1px 2px rgba(0,0,0,0.05)' : 'none'" style="border: none; padding: 3px 8px; font-size: 10px; font-weight: 600; border-radius: 3px; cursor: pointer; color: #334155;">By Date</button>
+      </div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 4px; max-height: 110px; overflow-y: auto;">
+      <div *ngFor="let task of getSortedTasks()" style="background: #F8FAFC; border: 1px solid #E2E8F0; border-left: 3px solid #1F3A40; padding: 4px 8px; border-radius: 0 4px 4px 0; position: relative;">
+        <button (click)="deleteTask(task.id)" style="position: absolute; top: 2px; right: 6px; background: transparent; border: none; color: #94A3B8; cursor: pointer; font-size: 14px;" title="Delete Task">&times;</button>
+        <div style="font-size: 11.5px; font-weight: 600; color: #0F172A; padding-right: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ task.title }}</div>
+        <div style="display: flex; justify-content: space-between; font-size: 10px; color: #64748B; margin-top: 1px;">
+          <span>Ref: <strong>{{ task.relatedTo }}</strong></span>
+          <span>📅 Due: <strong>{{ task.dueDate }}</strong></span>
+        </div>
+      </div>
+      <div *ngIf="upcomingTasks.length === 0" style="text-align: center; padding: 10px; color: #94A3B8; font-style: italic; font-size: 11px;">No pending tasks.</div>
+    </div>
+  </div>
+</div>
+
+<div style="margin-bottom: 8px;">
+  <input type="text" [(ngModel)]="searchQuery" placeholder="Search Master Sales Log Records..." style="width: 100%; padding: 6px 12px; border: 1px solid #CBD5E1; border-radius: 6px; font-size: 12px; outline: none; transition: border 0.15s;" onfocus="this.style.borderColor='#1f3a40'" onblur="this.style.borderColor='#cbd5e1'">
+</div>
+
+<div style="overflow-x: auto; background: #FFF; border-radius: 6px; border: 1px solid #E2E8F0;">
+  <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 12px;">
+    <thead style="background: #F1F5F9; border-bottom: 2px solid #E2E8F0;">
+      <tr>
+        <th style="padding: 6px 10px; font-weight: 700; color: #475569; font-size: 11px; text-transform: uppercase;">Deal Identity</th>
+        <th style="padding: 6px 10px; font-weight: 700; color: #475569; font-size: 11px; text-transform: uppercase;">Expected Revenue</th>
+        <th style="padding: 6px 10px; font-weight: 700; color: #475569; font-size: 11px; text-transform: uppercase;">Current Stage</th>
+        <th style="padding: 6px 10px; font-weight: 700; color: #475569; font-size: 11px; text-transform: uppercase;">Latest Interaction Remarks</th>
+        <th style="padding: 6px 10px; font-weight: 700; color: #475569; font-size: 11px; text-transform: uppercase; text-align: right;">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let lead of getFilteredLeads()" style="border-bottom: 1px solid #F1F5F9;" class="table-row-hover">
+        <td style="padding: 6px 10px;">
+          <div style="font-weight: 700; color: #1F3A40; cursor: pointer; font-size: 12px;" (click)="openEditLeadForm(lead)">{{ lead.name }}</div>
+          <div style="font-size: 10.5px; color: #64748B; margin-top: 1px;">{{ lead.source }} &bull; {{ lead.phone }}</div>
+        </td>
+        <td style="padding: 6px 10px; font-size: 12px;"><strong>AED {{ lead.value.toLocaleString() }}</strong></td>
+        <td style="padding: 6px 10px;">
+          <span style="padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 600; display: inline-block;"
+                [style.background]="lead.stage === 'Won' ? '#DCFCE7' : (lead.stage === 'Lost' ? '#FEE2E2' : '#E2E8F0')"
+                [style.color]="lead.stage === 'Won' ? '#166534' : (lead.stage === 'Lost' ? '#991B1B' : '#334155')">
+            {{ lead.stage }}
+          </span>
+        </td>
+        <td style="padding: 6px 10px; max-width: 260px; font-size: 11.5px; color: #334155; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+          <strong>[{{ lead.lastInteraction }}]</strong> {{ lead.interactionNotes }}
+        </td>
+        <td style="padding: 6px 10px; text-align: right; white-space: nowrap;">
+          <button (click)="openEditLeadForm(lead)" style="padding: 2px 6px; border: 1px solid #CBD5E1; background: #FFF; border-radius: 4px; cursor: pointer; margin-right: 4px; font-size: 11px; color: #1F3A40; transition: all 0.1s;" title="Edit Context">✏️</button>
+          <button (click)="deleteLead(lead.id)" style="padding: 2px 6px; border: 1px solid #FECACA; background: #FFF; border-radius: 4px; cursor: pointer; font-size: 11px; color: #DC2626; transition: all 0.1s;" title="Delete Log">🗑️</button>
+        </td>
+      </tr>
+      <tr *ngIf="getFilteredLeads().length === 0">
+        <td colspan="5" style="text-align: center; padding: 20px; color: #94A3B8; font-style: italic; font-size: 12px;">No matching logs found.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

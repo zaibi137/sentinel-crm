@@ -1,0 +1,270 @@
+<div class="page-header" style="margin-bottom: 12px; padding: 10px 14px; background-color: #1F3A40; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+  <h2 style="color: #ffffff; margin: 0; font-size: 15px; font-weight: 600; letter-spacing: -0.01em;">Opportunities</h2>
+  <button (click)="openCreateOpportunity()" class="primary-btn" type="button" style="background-color: #ffffff; color: #1F3A40; border: 1px solid #ffffff; font-size: 11px; font-weight: 600; padding: 5px 10px; border-radius: 4px; cursor: pointer;">+ Create Opportunity</button>
+</div>
+
+<div class="filter-row" style="display: flex; gap: 8px; align-items: center; margin-bottom: 16px; background: #FFFFFF; padding: 10px 14px; border: 1px solid #E5E7EB; border-radius: 6px; box-shadow: 0 1px 2px rgba(0,0,0,0.01);">
+  <div style="flex: 1; max-width: 260px; display: flex; flex-direction: column; gap: 2px;">
+    <label style="font-size: 10px; font-weight: 600; color: #6B7280; text-transform: uppercase; letter-spacing: 0.03em;">Search Context</label>
+    <div style="position: relative;">
+      <span style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #9CA3AF; font-size: 12px;">🔍</span>
+      <input type="text" [(ngModel)]="searchQuery" (keyup.enter)="applySearch()" placeholder="ID, stage, or lead..." style="width: 100%; height: 32px; padding: 0 10px 0 28px; border: 1px solid #D1D5DB; border-radius: 4px; font-size: 12px; color: #111827;">
+    </div>
+  </div>
+
+  <div style="width: 160px; display: flex; flex-direction: column; gap: 2px;">
+    <label style="font-size: 10px; font-weight: 600; color: #6B7280; text-transform: uppercase; letter-spacing: 0.03em;">Sales Stage</label>
+    <select [(ngModel)]="selectedStageFilter" style="width: 100%; height: 32px; padding: 0 8px; border: 1px solid #D1D5DB; border-radius: 4px; background-color: #fff; font-size: 12px; color: #111827; cursor: pointer;">
+      <option value="ALL">All Active Stages</option>
+      <option>New</option>
+      <option>Qualified</option>
+      <option>Proposal Sent</option>
+      <option>Quotation</option>
+      <option>Negotiation</option>
+      <option>Won</option>
+      <option>Lost</option>
+    </select>
+  </div>
+
+  <div style="display: flex; align-items: flex-end; height: 100%; padding-top: 14px;">
+    <button type="button" (click)="applySearch()" style="height: 32px; padding: 0 12px; background: #1F3A40; border: none; border-radius: 4px; color: #fff; font-size: 12px; font-weight: 500; cursor: pointer;">Search API</button>
+  </div>
+
+  @if (searchQuery.trim() !== '' || selectedStageFilter !== 'ALL') {
+    <div style="display: flex; align-items: flex-end; height: 100%; padding-top: 14px;">
+      <button type="button" (click)="clearAllFilters()" style="height: 32px; padding: 0 10px; background: #F3F4F6; border: 1px solid #E5E7EB; border-radius: 4px; color: #4B5563; font-size: 12px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 4px;">✕ Reset</button>
+    </div>
+  }
+</div>
+
+<div class="pipeline-table-card" style="background: #ffffff; border-radius: 6px; border: 1px solid #E5E7EB; overflow-x: auto; width: 100%;">
+  <table style="width: 100%; border-collapse: collapse; min-width: 900px; font-size: 12.5px;">
+    <thead>
+      <tr style="border-bottom: 1px solid #E5E7EB; background: #F9FAFB;">
+        <th style="width: 100px; text-align: left; padding: 10px 12px; color: #4B5563; font-weight: 600;">ID</th>
+        <th style="min-width: 180px; text-align: left; padding: 10px 12px; color: #4B5563; font-weight: 600;">Lead Reference</th>
+        <th style="width: 140px; text-align: left; padding: 10px 12px; color: #4B5563; font-weight: 600;">Expected Revenue</th>
+        <th style="width: 140px; text-align: left; padding: 10px 12px; color: #4B5563; font-weight: 600;">Probability</th>
+        <th style="width: 130px; text-align: left; padding: 10px 12px; color: #4B5563; font-weight: 600;">Expected Closing</th>
+        <th style="width: 120px; text-align: left; padding: 10px 12px; color: #4B5563; font-weight: 600;">Sales Stage</th>
+        <th style="width: 140px; text-align: right; padding: 10px 16px; color: #4B5563; font-weight: 600;">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (opp of getFilteredOpportunities(); track opp.id) {
+        <tr style="border-bottom: 1px solid #F3F4F6; transition: background 0.1s;" onmouseover="this.style.backgroundColor='#F9FAFB'" onmouseout="this.style.backgroundColor='transparent'">
+          <td style="padding: 10px 12px;"><strong style="color:#0284c7;">{{ opp.displayId || opp.id }}</strong></td>
+          <td style="padding: 10px 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 240px;">
+            <strong style="color: #374151;">
+              {{ getDisplayLeadName(opp) }}
+            </strong>
+          </td>
+          <td style="padding: 10px 12px; white-space: nowrap; font-weight: 600; color: #111827;">AED {{ opp.revenue.toLocaleString() }}</td>
+          <td style="padding: 10px 12px;">
+            <div style="display:flex; align-items:center; gap:6px; white-space: nowrap;">
+              <span style="font-size: 12px; font-weight: 500; min-width: 30px;">{{ opp.probability }}%</span>
+              <div style="flex-shrink: 0; width: 50px; height: 5px; background: #E5E7EB; border-radius: 3px; overflow: hidden;">
+                <div style="height: 100%; background: #f59e0b;" [style.width.%]="opp.probability"></div>
+              </div>
+            </div>
+          </td>
+          <td style="padding: 10px 12px; color: #4B5563; white-space: nowrap;">{{ opp.closingDate || '--' }}</td>
+          <td style="padding: 10px 12px;">
+            <span class="status-badge" 
+                  [ngClass]="'status-' + (opp.stage ? opp.stage.toLowerCase().replace(' ', '-') : 'new')"
+                  [style.background]="opp.stage === 'Proposal Sent' ? '#EEF2F6' : null"
+                  [style.color]="opp.stage === 'Proposal Sent' ? '#6366F1' : null"
+                  [style.border]="opp.stage === 'Proposal Sent' ? '1px solid #E0E7FF' : null"
+                  style="display: inline-block; white-space: nowrap; padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: 500;">
+              {{ opp.stage || 'New' }}
+            </span>
+          </td>
+          <td style="padding: 10px 16px; text-align: right;">
+            <div class="action-toolbar-set" style="display: flex; gap: 5px; justify-content: flex-end; align-items: center; white-space: nowrap;">
+              
+              <button type="button" (click)="openEditOpportunity(opp)" title="Edit" style="display: inline-flex; align-items: center; justify-content: center; padding: 5px; border-radius: 4px; border: 1px solid #E5E7EB; background: #fff; cursor: pointer;">
+                <svg fill="none" stroke="#4B5563" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width: 14px; height: 14px;">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-2.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                </svg>
+              </button>
+
+              @if (opp.stage === 'Won') {
+                <button type="button" (click)="goCreateCustomer(opp)" title="convert" style="display: inline-flex; align-items: center; justify-content: center; padding: 5px; border-radius: 4px; border: 1px solid #f59e0b; background: #FFFBEB; cursor: pointer;">
+                  <svg fill="none" stroke="#d97706" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width: 14px; height: 14px;">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                  </svg>
+                </button>
+              }
+
+              <button type="button" (click)="deleteOpportunity(opp.id)" title="Delete entry permanently" style="display: inline-flex; align-items: center; justify-content: center; padding: 5px; border-radius: 4px; border: 1px solid #FEE2E2; background: #FEF2F2; cursor: pointer;">
+                <svg fill="none" stroke="#EF4444" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width: 14px; height: 14px;">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                </svg>
+              </button>
+
+            </div>
+          </td>
+        </tr>
+      } @empty {
+        <tr>
+          <td colspan="7" style="text-align:center; color:#9CA3AF; padding:24px;">No active pipeline entries matched.</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+
+  <div class="table-summary-footer" style="padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #E5E7EB; background: #FAFAFA;">
+    <span style="font-size: 12px; color: #6B7280; font-weight: 500;">
+      Showing {{ getFilteredOpportunities().length }} pipeline entries
+    </span>
+    <button type="button" (click)="openCreateOpportunity()" style="background: none; border: none; color: #1F3A40; font-size: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 4px;">
+      <svg style="width:12px; height:12px;" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path>
+      </svg>
+      Add Opportunity
+    </button>
+  </div>
+</div>
+
+<div class="modal-overlay" [class.active]="isModalOpen" style="display: flex; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; align-items: center; justify-content: center; background: rgba(0,0,0,0.4); z-index: 1000; overflow: auto;">
+  <div class="modal-box" style="width: 100%; max-width: 580px; max-height: 90vh; background: #ffffff; padding: 0; border-radius: 8px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08); display: flex; flex-direction: column; overflow: hidden;">
+    
+    <form #oppForm="ngForm" (ngSubmit)="oppForm.valid && saveOpportunity()" style="margin: 0; display: flex; flex-direction: column; width: 100%;">
+      
+      <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background-color: #1F3A40;">
+        <h3 style="font-size: 14px; font-weight: 600; color: #ffffff; margin: 0; letter-spacing: 0.3px;">{{ modalTitle }}</h3>
+        <button class="modal-close-btn" type="button" (click)="isModalOpen = false" style="font-size: 20px; color: #ffffff; opacity: 0.8; background: none; border: none; cursor: pointer; line-height: 1;">&times;</button>
+      </div>
+
+      <div style="padding: 14px 16px; overflow-y: auto;">
+        <div class="lead-full-form-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 12px;">
+          
+          <div style="display: flex; flex-direction: column; gap: 2px;">
+            <label style="font-size: 11.5px; font-weight: 500; color: #374151;">Link Lead Reference *</label>
+            <select name="leadRef" [(ngModel)]="oForm.leadRef" required #leadRef="ngModel" 
+                    [style.border-color]="leadRef.invalid && leadRef.touched ? '#EF4444' : '#D1D5DB'"
+                    style="width: 100%; height: 32px; padding: 0 8px; border: 1px solid #D1D5DB; border-radius: 4px; background-color: #fff; font-size: 12px;">
+              <option value="" disabled selected>Select Lead Reference</option>
+              @for (lead of leadSnapshot; track lead.id) {
+                <option [value]="lead.id">{{ lead.displayId || truncateUUID(lead.id) }} &mdash; {{ lead.name }}</option>
+              }
+            </select>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 2px;">
+            <label style="font-size: 11.5px; font-weight: 500; color: #374151;">Link Customer (Optional)</label>
+            <select name="customerId" [(ngModel)]="oForm.customerId" 
+                    style="width: 100%; height: 32px; padding: 0 8px; border: 1px solid #D1D5DB; border-radius: 4px; background-color: #fff; font-size: 12px;">
+              <option value="" selected>-- No Customer Attached --</option>
+              @for (cust of customerSnapshot; track cust.id) {
+                <option [value]="cust.id">{{ cust.name }}</option>
+              }
+            </select>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 2px;">
+            <label style="font-size: 11.5px; font-weight: 500; color: #374151;">Expected Revenue (AED) *</label>
+            <input type="number" name="revenue" [(ngModel)]="oForm.revenue" required min="1" #revenue="ngModel"
+                   [style.border-color]="revenue.invalid && revenue.touched ? '#EF4444' : '#D1D5DB'"
+                   placeholder="0" style="height: 32px; padding: 0 8px; border: 1px solid #D1D5DB; border-radius: 4px; font-size: 12px;">
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 2px;">
+            <label style="font-size: 11.5px; font-weight: 500; color: #374151;">Deal Probability % *</label>
+            <input type="number" name="probability" [(ngModel)]="oForm.probability" required min="0" max="100" #probability="ngModel"
+                   [style.border-color]="probability.invalid && probability.touched ? '#EF4444' : '#D1D5DB'"
+                   placeholder="0" style="height: 32px; padding: 0 8px; border: 1px solid #D1D5DB; border-radius: 4px; font-size: 12px;">
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 2px;">
+            <label style="font-size: 11.5px; font-weight: 500; color: #374151;">Expected Closing Date *</label>
+            <input type="date" name="closingDate" [(ngModel)]="oForm.closingDate" required #closingDate="ngModel"
+                   [style.border-color]="closingDate.invalid && closingDate.touched ? '#EF4444' : '#D1D5DB'"
+                   style="height: 32px; padding: 0 8px; border: 1px solid #D1D5DB; border-radius: 4px; font-size: 12px;">
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 2px;">
+            <label style="font-size: 11.5px; font-weight: 500; color: #374151;">Sales Stage</label>
+            <select name="stage" [(ngModel)]="oForm.stage" (change)="onStageChange()" style="height: 32px; padding: 0 8px; border: 1px solid #D1D5DB; border-radius: 4px; background-color: #fff; font-size: 12px;">
+              <option>New</option>
+              <option>Proposal Sent</option>
+              <option>Quotation</option>
+              <option>Negotiation</option>
+              <option>Won</option>
+              <option>Lost</option>
+            </select>
+          </div>
+
+          <!-- Assignee is now optional so it never blocks saving -->
+          <div class="full-width" style="grid-column: span 2; display: flex; flex-direction: column; gap: 2px;">
+            <label style="font-size: 11.5px; font-weight: 500; color: #374151;">Assignee (Salesperson)</label>
+            <select name="assignee" [(ngModel)]="oForm.assignee"
+                    style="height: 32px; padding: 0 8px; border: 1px solid #D1D5DB; border-radius: 4px; background-color: #fff; font-size: 12px;">
+              <option value="">-- Unassigned / Select Assignee --</option>
+              @for (user of assigneeOptions; track user.id) {
+                <option [value]="user.id">{{ user.name }}</option> 
+              }
+            </select>
+          </div>
+
+          <div class="full-width" style="grid-column: span 2; display: flex; flex-direction: column; gap: 2px;">
+            <label style="font-size: 11.5px; font-weight: 500; color: #374151;">Primary Competitor</label>
+            <input type="text" name="competitor" [(ngModel)]="oForm.competitor" placeholder="Enterprise tags" style="height: 32px; padding: 0 8px; border: 1px solid #D1D5DB; border-radius: 4px; font-size: 12px;">
+          </div>
+
+          <div class="full-width" style="grid-column: span 2; display: flex; flex-direction: column; gap: 2px;">
+            <label style="font-size: 11.5px; font-weight: 500; color: #374151;">Internal Strategy Notes</label>
+            <textarea name="notes" [(ngModel)]="oForm.notes" placeholder="Deal summaries..." style="min-height: 50px; padding: 6px 8px; border: 1px solid #D1D5DB; border-radius: 4px; font-family: inherit; resize: vertical; font-size: 12px;"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-actions-row" style="display: flex; justify-content: flex-end; gap: 8px; padding: 10px 16px; border-top: 1px solid #F3F4F6; background: #fff; flex-shrink: 0;">
+        <button class="secondary-btn-sm" type="button" (click)="isModalOpen = false" style="padding: 6px 14px; border: 1px solid #D1D5DB; border-radius: 4px; background: #fff; color: #374151; font-size: 12px; font-weight: 500; cursor: pointer;">Cancel changes</button>
+        
+        <button class="primary-btn-sm" type="submit" [disabled]="oppForm.invalid || isSubmitting" [style.opacity]="(oppForm.invalid || isSubmitting) ? '0.5' : '1'" [style.background]="(oppForm.invalid || isSubmitting) ? '#9CA3AF' : '#1F3A40'" style="padding: 6px 14px; border: none; border-radius: 4px; color: #fff; font-size: 12px; font-weight: 500; cursor: pointer;">
+          {{ isSubmitting ? 'Saving API...' : 'Save changes' }}
+        </button>
+      </div>
+    </form>
+
+  </div>
+</div>
+
+<div class="modal-overlay" [class.active]="isConvertModalOpen" style="display: flex; align-items: center; justify-content: center;">
+  <div class="modal-box" style="width: 100%; max-width: 460px; background: #ffffff; padding: 0; border-radius: 8px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08); display: flex; flex-direction: column;">
+    
+    <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background-color: #1F3A40;">
+      <h3 style="font-size: 14px; font-weight: 600; color: #ffffff; margin: 0; letter-spacing: 0.3px;">🚀 Convert to Customer Profile</h3>
+      <button type="button" (click)="isConvertModalOpen = false" style="font-size: 20px; color: #ffffff; opacity: 0.8; background: none; border: none; cursor: pointer; line-height: 1;">&times;</button>
+    </div>
+
+    <div style="padding: 14px 16px;">
+      <p style="font-size: 12px; color: #4B5563; margin-bottom: 10px; line-height: 1.4;">Review the formal corporate account details before transforming this pipeline setup:</p>
+
+      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 12px; background: #F9FAFB; padding: 10px; border-radius: 6px; border: 1px solid #E5E7EB; font-size: 12px;">
+        <div style="display: flex; flex-direction: column; gap: 2px;">
+          <span style="font-size: 10px; text-transform: uppercase; color: #6B7280; font-weight: 600;">Account Name</span>
+          <span style="font-weight: 600; color: #111827;">{{ convertPreviewData.name || 'N/A' }}</span>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 2px;">
+          <span style="font-size: 10px; text-transform: uppercase; color: #6B7280; font-weight: 600;">Industry Vertical</span>
+          <span style="color: #111827;">{{ convertPreviewData.industry || 'General' }}</span>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 2px;">
+          <span style="font-size: 10px; text-transform: uppercase; color: #6B7280; font-weight: 600;">Source Reference</span>
+          <span style="font-weight: 600; color: #0284c7;">{{ convertPreviewData.fromOpp }}</span>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 2px;">
+          <span style="font-size: 10px; text-transform: uppercase; color: #6B7280; font-weight: 600;">Status</span>
+          <span style="font-size: 11px; font-weight: 600; color: #16a34a; background: #DCFCE7; padding: 1px 6px; border-radius: 4px; width: fit-content;">Closed Won</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="display: flex; justify-content: flex-end; gap: 8px; padding: 10px 16px; border-top: 1px solid #F3F4F6; background: #fff;">
+      <button type="button" (click)="isConvertModalOpen = false" style="padding: 6px 14px; border: 1px solid #D1D5DB; border-radius: 4px; background: #fff; color: #374151; font-size: 12px; font-weight: 500; cursor: pointer;">Cancel</button>
+      <button type="button" (click)="confirmAndNavigateCustomer()" style="padding: 6px 14px; border: none; border-radius: 4px; background: #16a34a; color: #fff; font-size: 12px; font-weight: 500; cursor: pointer;">Confirm Profile</button>
+    </div>
+  </div>
+</div>

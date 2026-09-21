@@ -1,0 +1,220 @@
+<div class="dashboard-wrapper" style="padding: 0; width: 100%; box-sizing: border-box;">
+  <main class="main-content" style="padding: 0; width: 100%;">
+
+    <div *ngIf="showIncomingBanner" class="info-banner" style="background:#e8f5e9; border:1px solid #a5d6a7; padding:8px 12px; border-radius:4px; color:#2e7d32; margin-bottom:12px; font-size:12px; display:flex; justify-content:space-between; align-items:center;">
+      <span><strong>Conversion Alert:</strong> Creating new customer directory from Won Opportunity pipeline parameters.</span>
+      <button (click)="showIncomingBanner = false" style="background:none; border:none; color:inherit; font-size:16px; cursor:pointer; font-weight:bold; line-height: 1;">&times;</button>
+    </div>
+
+    <div class="page-header" style="margin-bottom: 12px; padding: 10px 14px; background-color: #1F3A40; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+      <h2 style="color: #ffffff; margin: 0; font-size: 15px; font-weight: 600; letter-spacing: -0.01em;">Customers Directory</h2>
+      <button (click)="openCreateCustomer()" class="primary-btn" type="button" style="background-color: #ffffff; color: #1F3A40; border: 1px solid #ffffff; font-size: 11px; font-weight: 600; padding: 5px 10px; border-radius: 4px; cursor: pointer;">+ Create Customer</button>
+    </div>
+
+    <div class="filter-row" style="display: flex; gap: 8px; align-items: center; margin-bottom: 12px; background: #FFFFFF; padding: 8px 12px; border: 1px solid #E5E7EB; border-radius: 6px; box-shadow: 0 1px 2px rgba(0,0,0,0.01);">
+      <div style="flex: 1; max-width: 340px; display: flex; flex-direction: column; gap: 2px;">
+        <label style="font-size: 9px; font-weight: 600; color: #6B7280; text-transform: uppercase; letter-spacing: 0.03em;">Search Context</label>
+        <div style="position: relative;">
+          <span style="position: absolute; left: 8px; top: 50%; transform: translateY(-50%); color: #9CA3AF; font-size: 11px;">🔍</span>
+          <input type="text" [(ngModel)]="searchQuery" (keyup.enter)="fetchCustomersFromAPI()" placeholder="Search by name, NTN, industry..." style="width: 100%; height: 28px; padding: 0 8px 0 24px; border: 1px solid #D1D5DB; border-radius: 4px; font-size: 11.5px; color: #111827; box-sizing: border-box;">
+        </div>
+      </div>
+      <div style="display: flex; align-items: flex-end; height: 100%; padding-top: 14px;">
+        <button type="button" (click)="fetchCustomersFromAPI()" style="height: 28px; padding: 0 10px; background: #1F3A40; border: none; border-radius: 4px; color: #fff; font-size: 11px; font-weight: 500; cursor: pointer;">Search API</button>
+      </div>
+    </div>
+
+    <div class="pipeline-table-card" style="background: #ffffff; border-radius: 6px; border: 1px solid #E5E7EB; width: 100%; box-sizing: border-box; overflow: hidden;">
+      <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+        <thead>
+          <tr style="border-bottom: 1px solid #E5E7EB; background: #F9FAFB;">
+            <th style="width: 12%; text-align: left; padding: 8px 10px; color: #4B5563; font-weight: 600;">ID</th>
+            <th style="width: 20%; text-align: left; padding: 8px 10px; color: #4B5563; font-weight: 600;">Company Name</th>
+            <th style="width: 10%; text-align: left; padding: 8px 10px; color: #4B5563; font-weight: 600;">Segment</th>
+            <th style="width: 12%; text-align: left; padding: 8px 10px; color: #4B5563; font-weight: 600;">Industry</th>
+            <th style="width: 24%; text-align: left; padding: 8px 10px; color: #4B5563; font-weight: 600;">Contact Details</th>
+            <th style="width: 11%; text-align: left; padding: 8px 10px; color: #4B5563; font-weight: 600;">Credit Limit</th>
+            <th style="width: 11%; text-align: left; padding: 8px 10px; color: #4B5563; font-weight: 600;">Salesperson</th>
+            <th style="width: 80px; text-align: right; padding: 8px 12px; color: #4B5563; font-weight: 600;">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (cust of getFilteredCustomers(); track cust.id) {
+            <tr style="border-bottom: 1px solid #F3F4F6; transition: background 0.1s;" onmouseover="this.style.backgroundColor='#F9FAFB'" onmouseout="this.style.backgroundColor='transparent'">
+              <td style="padding: 8px 10px; white-space: nowrap;">
+                <strong style="color:#0284c7;">{{ cust.customerCode || 'N/A' }}</strong><br>
+                <code style="font-size: 9.5px; color: #6B7280; background: #F3F4F6; padding: 2px 4px; border-radius: 3px; user-select: all; cursor: copy; margin-top: 4px; display: inline-block;" title="Double-click to copy this GUID for Opportunity API">
+                  {{ cust.id }}
+                </code>
+              </td>
+              <td style="padding: 8px 10px; white-space: normal; word-break: break-word;"><strong style="color:#111827;">{{ cust.customerName || 'Unnamed' }}</strong></td>
+              <td style="padding: 8px 10px; white-space: nowrap;">
+                <span class="status-badge status-new" style="display: inline-block; padding: 1px 5px; border-radius: 4px; font-size: 10.5px; font-weight: 500; background: #EFF6FF; color: #1D4ED8; border: 1px solid #BFDBFE;">
+                  {{ cust.group || 'N/A' }}
+                </span>
+              </td>
+              <td style="padding: 8px 10px; color: #374151; white-space: nowrap;">{{ cust.industry }}</td>
+              <td style="padding: 8px 10px; color:#4B5563; font-size: 11.5px; white-space: normal; word-break: break-word;">
+                <ng-container *ngIf="cust.contacts && cust.contacts.length > 0; else noContact">
+                  <strong>{{ cust.contacts[0].contactName }}</strong> 
+                  <span *ngIf="cust.contacts[0].mobile"><br>📱 {{ cust.contacts[0].mobile }}</span>
+                  <span *ngIf="cust.contacts[0].email"><br>✉️ {{ cust.contacts[0].email }}</span>
+                </ng-container>
+                <ng-template #noContact>No Primary Contact</ng-template>
+              </td>
+              <td style="padding: 8px 10px; font-weight: 600; color: #111827; white-space: nowrap;">AED {{ (cust.creditLimit || 0).toLocaleString() }}</td>
+              <td style="padding: 8px 10px; color: #4B5563; white-space: nowrap;">{{ cust.assignedSalespersonName || getSalespersonName(cust.assignedSalespersonId) }}</td>
+              <td style="padding: 8px 12px; text-align: right;">
+                <div class="action-toolbar-set" style="display: flex; gap: 4px; justify-content: flex-end; align-items: center; white-space: nowrap;">
+                  
+                  <button type="button" (click)="openEditCustomer(cust)" title="Edit" style="display: inline-flex; align-items: center; justify-content: center; padding: 4px; border-radius: 4px; border: 1px solid #E5E7EB; background: #fff; cursor: pointer;">
+                    <svg fill="none" stroke="#4B5563" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width: 13px; height: 13px;">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-2.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                    </svg>
+                  </button>
+
+                  <button type="button" (click)="deleteCustomer(cust.id)" title="Delete entry permanently" style="display: inline-flex; align-items: center; justify-content: center; padding: 4px; border-radius: 4px; border: 1px solid #FEE2E2; background: #FEF2F2; cursor: pointer;">
+                    <svg fill="none" stroke="#EF4444" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width: 13px; height: 13px;">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                    </svg>
+                  </button>
+
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="8" style="text-align:center; color:#9CA3AF; padding:20px;">No matching customer profiles found in API Database.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+
+      <div class="table-summary-footer" style="padding: 8px 12px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #E5E7EB; background: #FAFAFA;">
+        <span style="font-size: 11.5px; color: #6B7280; font-weight: 500;">
+          Showing {{ getFilteredCustomers().length }} active customer accounts
+        </span>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<div class="modal-overlay" [class.active]="isModalOpen" style="display: flex; align-items: center; justify-content: center; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.4); z-index: 1000;">
+  <div class="modal-box" style="width: 100%; max-width: 600px; max-height: 90vh; background: #ffffff; padding: 0; border-radius: 8px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08); display: flex; flex-direction: column; overflow: hidden;">
+    
+    <form #custForm="ngForm" (ngSubmit)="custForm.valid && saveCustomer()" style="margin: 0; display: flex; flex-direction: column; height: 100%; width: 100%; overflow: hidden;">
+      
+      <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background-color: #1F3A40; flex-shrink: 0;">
+        <h3 style="font-size: 14px; font-weight: 600; color: #ffffff; margin: 0; letter-spacing: 0.3px;">{{ modalTitle }}</h3>
+        <button class="modal-close-btn" type="button" (click)="isModalOpen = false" style="font-size: 20px; color: #ffffff; opacity: 0.8; background: none; border: none; cursor: pointer; line-height: 1;">&times;</button>
+      </div>
+
+      <div style="padding: 14px 16px; overflow-y: auto; flex-grow: 1; min-height: 0;">
+        
+        <h4 style="margin: 0 0 10px 0; font-size: 12px; color: #111827; border-bottom: 1px solid #E5E7EB; padding-bottom: 4px;">Company Details</h4>
+        <div class="lead-full-form-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 16px;">
+          
+          <div style="display: flex; flex-direction: column; gap: 2px;">
+            <label style="font-size: 11.5px; font-weight: 500; color: #374151;">Company Name *</label>
+            <input type="text" name="customerName" [(ngModel)]="cForm.customerName" required #name="ngModel"
+                   [style.border-color]="name.invalid && name.touched ? '#EF4444' : '#D1D5DB'"
+                   placeholder="Legal registered entity" style="height: 30px; padding: 0 8px; border: 1px solid #D1D5DB; border-radius: 4px; font-size: 12px; width: 100%; box-sizing: border-box;">
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 2px;">
+            <label style="font-size: 11.5px; font-weight: 500; color: #374151;">Industry Sector</label>
+            <select name="industry" [(ngModel)]="cForm.industry" style="height: 30px; padding: 0 6px; border: 1px solid #D1D5DB; border-radius: 4px; background-color: #fff; font-size: 12px; width: 100%; box-sizing: border-box;">
+              <option value="">Select Industry</option>
+              <option>General</option>
+              <option>Construction</option>
+              <option>Retail &amp; Trading</option>
+              <option>Real Estate</option>
+            </select>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 2px;">
+            <label style="font-size: 11.5px; font-weight: 500; color: #374151;">NTN Number</label>
+            <input type="text" name="ntn" [(ngModel)]="cForm.ntn" placeholder="Optional" style="height: 30px; padding: 0 8px; border: 1px solid #D1D5DB; border-radius: 4px; font-size: 12px; width: 100%; box-sizing: border-box;">
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 2px;">
+            <label style="font-size: 11.5px; font-weight: 500; color: #374151;">STRN Number</label>
+            <input type="text" name="strn" [(ngModel)]="cForm.strn" placeholder="Optional" style="height: 30px; padding: 0 8px; border: 1px solid #D1D5DB; border-radius: 4px; font-size: 12px; width: 100%; box-sizing: border-box;">
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 2px;">
+            <label style="font-size: 11.5px; font-weight: 500; color: #374151;">Credit Limit (AED)</label>
+            <input type="number" name="creditLimit" [(ngModel)]="cForm.creditLimit" placeholder="0" style="height: 30px; padding: 0 8px; border: 1px solid #D1D5DB; border-radius: 4px; font-size: 12px; width: 100%; box-sizing: border-box;">
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 2px;">
+            <label style="font-size: 11.5px; font-weight: 500; color: #374151;">Assigned Salesperson</label>
+            <select name="assignedSalespersonId" [(ngModel)]="cForm.assignedSalespersonId" style="height: 30px; padding: 0 6px; border: 1px solid #D1D5DB; border-radius: 4px; background-color: #fff; font-size: 12px; width: 100%; box-sizing: border-box;">
+              <!-- 🚀 Value properly set to empty string for "Unassigned" -->
+              <option value="">Unassigned</option>
+              @for (rep of salesTeamRoster; track rep.id) {
+                <option [value]="rep.id">{{ rep.name }}</option>
+              }
+            </select>
+          </div>
+        </div>
+
+        <h4 style="margin: 0 0 10px 0; font-size: 12px; color: #111827; border-bottom: 1px solid #E5E7EB; padding-bottom: 4px;">Primary Contact Person</h4>
+        <div class="lead-full-form-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 16px; background: #F9FAFB; padding: 10px; border-radius: 6px; border: 1px solid #E5E7EB;">
+          
+          <div style="display: flex; flex-direction: column; gap: 2px;">
+            <label style="font-size: 11.5px; font-weight: 500; color: #374151;">Contact Name *</label>
+            <input type="text" name="contactName" [(ngModel)]="cForm.contact.contactName" required style="height: 30px; padding: 0 8px; border: 1px solid #D1D5DB; border-radius: 4px; font-size: 12px;">
+          </div>
+          
+          <div style="display: flex; flex-direction: column; gap: 2px;">
+            <label style="font-size: 11.5px; font-weight: 500; color: #374151;">Designation</label>
+            <input type="text" name="designation" [(ngModel)]="cForm.contact.designation" style="height: 30px; padding: 0 8px; border: 1px solid #D1D5DB; border-radius: 4px; font-size: 12px;">
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 2px;">
+            <label style="font-size: 11.5px; font-weight: 500; color: #374151;">Mobile Number *</label>
+            <input type="text" name="mobile" [(ngModel)]="cForm.contact.mobile" required style="height: 30px; padding: 0 8px; border: 1px solid #D1D5DB; border-radius: 4px; font-size: 12px;">
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 2px;">
+            <label style="font-size: 11.5px; font-weight: 500; color: #374151;">Email Address</label>
+            <input type="email" name="email" [(ngModel)]="cForm.contact.email" style="height: 30px; padding: 0 8px; border: 1px solid #D1D5DB; border-radius: 4px; font-size: 12px;">
+          </div>
+        </div>
+
+        <h4 style="margin: 0 0 10px 0; font-size: 12px; color: #111827; border-bottom: 1px solid #E5E7EB; padding-bottom: 4px;">Addresses</h4>
+        <div class="lead-full-form-grid" style="display: flex; flex-direction: column; gap: 10px;">
+          
+          <div style="display: flex; flex-direction: column; gap: 2px;">
+            <label style="font-size: 11.5px; font-weight: 500; color: #374151;">Billing Address *</label>
+            <textarea name="billingAddress" [(ngModel)]="cForm.billingAddress" required (input)="onBillingAddressChange()" #billingAddress="ngModel"
+                      style="min-height: 40px; padding: 4px 8px; border: 1px solid #D1D5DB; border-radius: 4px; font-family: inherit; resize: vertical; font-size: 12px; width: 100%; box-sizing: border-box;"></textarea>
+          </div>
+
+          <div style="display: flex; align-items: center; gap: 6px;">
+            <input type="checkbox" id="sameAsBilling" name="sameAsBilling" [(ngModel)]="sameAsBilling" (change)="onSameAsBillingToggle()" style="margin: 0; cursor: pointer;">
+            <label for="sameAsBilling" style="font-size: 11.5px; font-weight: 400; color: #4B5563; cursor: pointer; user-select: none;">Shipping address same as billing</label>
+          </div>
+
+          <div *ngIf="!sameAsBilling" style="display: flex; flex-direction: column; gap: 2px;">
+            <label style="font-size: 11.5px; font-weight: 500; color: #374151;">Shipping Address *</label>
+            <textarea name="shippingAddress" [(ngModel)]="cForm.shippingAddress" required
+                      style="min-height: 40px; padding: 4px 8px; border: 1px solid #D1D5DB; border-radius: 4px; font-family: inherit; resize: vertical; font-size: 12px; width: 100%; box-sizing: border-box;"></textarea>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="modal-actions-row" style="display: flex; justify-content: flex-end; gap: 8px; padding: 10px 16px; border-top: 1px solid #F3F4F6; background: #fff; flex-shrink: 0;">
+        <button class="secondary-btn-sm" type="button" (click)="isModalOpen = false" style="padding: 6px 14px; border: 1px solid #D1D5DB; border-radius: 4px; background: #fff; color: #374151; font-size: 12px; font-weight: 500; cursor: pointer;">Cancel</button>
+        
+        <button class="primary-btn-sm" type="submit" [disabled]="custForm.invalid || isSubmitting" [style.opacity]="(custForm.invalid || isSubmitting) ? '0.5' : '1'" [style.background]="(custForm.invalid || isSubmitting) ? '#9CA3AF' : '#1F3A40'" style="padding: 6px 14px; border: none; border-radius: 4px; color: #fff; font-size: 12px; font-weight: 500; cursor: pointer;">
+          {{ isSubmitting ? 'Saving...' : 'Save Customer' }}
+        </button>
+      </div>
+    </form>
+
+  </div>
+</div>

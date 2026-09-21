@@ -1,0 +1,371 @@
+<div style="width: 100%; box-sizing: border-box; background-color: #F8FAFC;">
+
+  <div class="page-header" style="display: flex; justify-content: space-between; align-items: center; margin-top: 0; margin-bottom: 12px; background-color: #1F3A40; padding: 10px 14px; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+    <div>
+      <h2 style="color: #ffffff; margin: 0; font-size: 14px; font-weight: 700; letter-spacing: 0.3px;">Leads Tracking Directory</h2>
+    </div>
+    <button (click)="openCreateLead()" type="button" style="padding: 5px 12px; font-weight: 600; cursor: pointer; background-color: #ffffff; color: #1F3A40; border: none; border-radius: 4px; font-size: 11px;">+ Create new lead</button>
+  </div>
+
+  <div class="dashboard-top-row" style="display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: center; margin-bottom: 12px; background: #fff; padding: 12px; border-radius: 6px; border: 1px solid #E5E7EB; box-shadow: 0 1px 2px rgba(0,0,0,0.01);">
+
+    <div class="search-container" style="width: 100%; min-width: 24px;">
+      <label style="display: block; font-weight: 700; font-size: 10px; color: #4B5563; text-transform: uppercase; margin-bottom: 4px; letter-spacing: 0.5px;">Search Directory</label>
+      <div class="search-box">
+        <input type="text" [(ngModel)]="searchQuery" placeholder="Search by code, name, entity or sector..." style="width: 100%; height: 32px; padding: 0 10px; border: 1px solid #D1D5DB; border-radius: 4px; font-size: 12.5px; box-sizing: border-box;">
+      </div>
+    </div>
+
+    <div class="analytics-container" style="display: flex; align-items: center; gap: 20px; border-left: 1px solid #E5E7EB; padding-left: 16px;">
+      <div class="pie-chart-wrapper" style="position: relative; width: 68px; height: 68px; border-radius: 50%; box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.05);" [style.background]="getPieChartStyles()">
+      </div>
+
+      <div class="chart-legend" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px 12px;">
+        <div style="display: flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 500; color: #374151;">
+          <span style="width: 10px; height: 10px; border-radius: 2px; background: #3B82F6; display: inline-block;"></span>
+          New ({{ getStatusCount('New') }})
+        </div>
+        <div style="display: flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 500; color: #374151;">
+          <span style="width: 10px; height: 10px; border-radius: 2px; background: #F59E0B; display: inline-block;"></span>
+          Contacted ({{ getStatusCount('Contacted') }})
+        </div>
+        <div style="display: flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 500; color: #374151;">
+          <span style="width: 10px; height: 10px; border-radius: 2px; background: #10B981; display: inline-block;"></span>
+          Qualified ({{ getStatusCount('Qualified') }})
+        </div>
+        <div style="display: flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 500; color: #374151;">
+          <span style="width: 10px; height: 10px; border-radius: 2px; background: #EF4444; display: inline-block;"></span>
+          Lost ({{ getStatusCount('Lost') }})
+        </div>
+      </div>
+    </div>
+  </div>  
+
+  <div style="background: #fff; border-radius: 6px; border: 1px solid #E5E7EB; box-shadow: 0 1px 3px rgba(0,0,0,0.05); overflow-x: auto;">
+    <table class="leads-table" style="width: 100%; border-collapse: collapse; text-align: left; table-layout: auto; font-size: 12.5px; min-width: 950px;">
+      <thead style="background: #F9FAFB; border-bottom: 1px solid #E5E7EB;">
+        <tr>
+          <th style="padding: 10px 12px; width: 10%; font-weight: 600; font-size: 12px; color: #4B5563; letter-spacing: 0.3px;">Lead ID</th>
+          <th style="padding: 10px 12px; width: 15%; font-weight: 600; font-size: 12px; color: #4B5563; letter-spacing: 0.3px;">Lead Name</th>
+          <th style="padding: 10px 12px; width: 18%; font-weight: 600; font-size: 12px; color: #4B5563; letter-spacing: 0.3px;">Company Entity</th>
+          <th style="padding: 10px 12px; width: 12%; font-weight: 600; font-size: 12px; color: #4B5563; letter-spacing: 0.3px;">Industry</th>
+          <th style="padding: 10px 12px; width: 10%; font-weight: 600; font-size: 12px; color: #4B5563; letter-spacing: 0.3px;">Source</th>
+          <th style="padding: 10px 12px; width: 13%; font-weight: 600; font-size: 12px; color: #4B5563; letter-spacing: 0.3px;">Owner / Assignee</th>
+          <th style="padding: 10px 12px; width: 10%; font-weight: 600; font-size: 12px; color: #4B5563; letter-spacing: 0.3px;">Status</th>
+          <th style="padding: 10px 12px; width: 12%; font-weight: 600; font-size: 12px; color: #4B5563; letter-spacing: 0.3px; text-align: center;">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (lead of getFilteredLeads(); track lead.id) {
+          <tr style="border-bottom: 1px solid #F3F4F6;" onmouseover="this.style.backgroundColor='#F9FAFB'" onmouseout="this.style.backgroundColor='transparent'">
+            <td style="padding: 10px 12px; white-space: nowrap;"><button type="button" (click)="viewLeadDetails(lead.id)" style="color:#0284c7; font-weight:700; cursor:pointer; text-decoration:underline; background: none; border: none; padding: 0; font-size: inherit;">{{ formatDisplayId(lead.id) }}</button></td>
+            <td style="padding: 10px 12px; white-space: nowrap;"><strong>{{ lead.name }}</strong></td>
+            <td style="padding: 10px 12px; color: #4B5563; white-space: nowrap;">{{ lead.company || '--' }}</td>
+            <td style="padding: 10px 12px; color: #4B5563; white-space: nowrap;">{{ lead.industry }}</td>
+            <td style="padding: 10px 12px; color: #4B5563; white-space: nowrap;">{{ lead.source }}</td>
+            <td style="padding: 10px 12px; color: #4B5563; white-space: nowrap;">{{ lead.assignedTo }}</td>
+            <td style="padding: 10px 12px;">
+              <span class="status-badge" 
+                    [style.background]="lead.status === 'New' ? '#EFF6FF' : lead.status === 'Contacted' ? '#FEF3C7' : lead.status === 'Qualified' ? '#DCFCE7' : '#FEE2E2'"
+                    [style.color]="lead.status === 'New' ? '#2563EB' : lead.status === 'Contacted' ? '#D97706' : lead.status === 'Qualified' ? '#16A34A' : '#EF4444'"
+                    style="padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: 600; display: inline-block;">
+                {{ lead.status }}
+              </span>
+            </td>
+            <td style="padding: 10px 12px; text-align: center;">
+              <div style="display: flex; gap: 5px; justify-content: center; align-items: center;">
+                <button class="action-btn" type="button" (click)="viewLeadDetails(lead.id)" title="View" style="display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; padding: 0; border-radius: 4px; border: 1px solid #BFDBFE; background: #EFF6FF; color: #2563EB; cursor: pointer;">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                </button>
+                <button class="action-btn" type="button" (click)="openEditLead(lead)" title="Edit" style="display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; padding: 0; border-radius: 4px; border: 1px solid #E5E7EB; background: #F9FAFB; color: #374151; cursor: pointer;">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .622.622l4.353-1.32a2 2 0 0 0 .83-.497z"></path><path d="m15 5 4 4"></path></svg>
+                </button>
+                <button type="button" (click)="startLeadConversion(lead)" title="convert" style="display: inline-flex; align-items: center; justify-content: center; padding: 5px; border-radius: 4px; border: 1px solid #f59e0b; background: #FFFBEB; cursor: pointer; width: 24px; height: 24px;">
+                  <svg fill="none" stroke="#d97706" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width: 14px; height: 14px;">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                  </svg>
+                </button>
+                <button class="action-btn" type="button" (click)="deleteLead(lead.id)" title="Delete" style="display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; padding: 0; border-radius: 4px; border: 1px solid #FECACA; background: #FEF2F2; color: #EF4444; cursor: pointer;">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="8" style="text-align:center; padding:30px; color:#9CA3AF; font-size: 13px;">No lead matching records discovered in the directory.</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Create / Edit Lead Modal -->
+<div class="modal-overlay" [class.active]="isFormModalOpen" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); align-items: center; justify-content: center; z-index: 1000;" [style.display]="isFormModalOpen ? 'flex' : 'none'">
+  <div class="modal-box modal-wide" style="background: #fff; border-radius: 8px; width: 90%; max-width: 640px; max-height: 88vh; overflow: hidden; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.08); display: flex; flex-direction: column;">
+    
+    <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; background-color: #1F3A40; padding: 14px 16px; margin: 0; border-bottom: 1px solid rgba(0,0,0,0.05); border-top-left-radius: 8px; border-top-right-radius: 8px; width: 100%; box-sizing: border-box; flex-shrink: 0;">
+      <h3 style="margin: 0; font-size: 14px; font-weight: 700; color: #ffffff; letter-spacing: 0.3px;">{{ formModalTitle }}</h3>
+      <button class="modal-close-btn" type="button" (click)="isFormModalOpen = false" style="background: none; border: none; font-size: 22px; cursor: pointer; color: #ffffff; line-height: 1; opacity: 0.85; transition: opacity 0.15s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.85'">&times;</button>
+    </div>
+
+    <div style="padding: 16px; overflow-y: auto; flex: 1;">
+      <div class="lead-full-form-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px 12px; margin-bottom: 4px;">
+        <div style="display: flex; flex-direction: column; gap: 2px;">
+          <label style="font-weight: 500; font-size: 11.5px; color: #374151;">Lead name *</label>
+          <input type="text" [(ngModel)]="lForm.name" placeholder="Individual contact name" [style.border]="formErrors['name'] ? '1px solid #EF4444' : '1px solid #D1D5DB'" style="padding: 0 8px; border-radius: 4px; font-size: 12px; height: 32px; box-sizing: border-box; width: 100%;">
+          @if (formErrors['name']) {
+            <span style="color: #EF4444; font-size: 10.5px;">{{ formErrors['name'] }}</span>
+          }
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 2px;">
+          <label style="font-weight: 500; font-size: 11.5px; color: #374151;">Company name</label>
+          <input type="text" [(ngModel)]="lForm.company" placeholder="Registered organization name" style="padding: 0 8px; border: 1px solid #D1D5DB; border-radius: 4px; font-size: 12px; height: 32px; box-sizing: border-box; width: 100%;">
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 2px;">
+          <label style="font-weight: 500; font-size: 11.5px; color: #374151;">Designation / Contact title</label>
+          <input type="text" [(ngModel)]="lForm.contact" placeholder="e.g. Procurement Manager" style="padding: 0 8px; border: 1px solid #D1D5DB; border-radius: 4px; font-size: 12px; height: 32px; box-sizing: border-box; width: 100%;">
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 2px;">
+          <label style="font-weight: 500; font-size: 11.5px; color: #374151;">Mobile number</label>
+          <input type="text" [(ngModel)]="lForm.mobile" placeholder="e.g. +971 50 000 0000" [style.border]="formErrors['mobile'] ? '1px solid #EF4444' : '1px solid #D1D5DB'" style="padding: 0 8px; border-radius: 4px; font-size: 12px; height: 32px; box-sizing: border-box; width: 100%;">
+          @if (formErrors['mobile']) {
+            <span style="color: #EF4444; font-size: 10.5px;">{{ formErrors['mobile'] }}</span>
+          }
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 2px;">
+          <label style="font-weight: 500; font-size: 11.5px; color: #374151;">WhatsApp number</label>
+          <input type="text" [(ngModel)]="lForm.whatsapp" placeholder="WhatsApp contact string" [style.border]="formErrors['whatsapp'] ? '1px solid #EF4444' : '1px solid #D1D5DB'" style="padding: 0 8px; border-radius: 4px; font-size: 12px; height: 32px; box-sizing: border-box; width: 100%;">
+          @if (formErrors['whatsapp']) {
+            <span style="color: #EF4444; font-size: 10.5px;">{{ formErrors['whatsapp'] }}</span>
+          }
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 2px;">
+          <label style="font-weight: 500; font-size: 11.5px; color: #374151;">Email address</label>
+          <input type="email" [(ngModel)]="lForm.email" placeholder="name@company.com" [style.border]="formErrors['email'] ? '1px solid #EF4444' : '1px solid #D1D5DB'" style="padding: 0 8px; border-radius: 4px; font-size: 12px; height: 32px; box-sizing: border-box; width: 100%;">
+          @if (formErrors['email']) {
+            <span style="color: #EF4444; font-size: 10.5px;">{{ formErrors['email'] }}</span>
+          }
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 2px;">
+          <label style="font-weight: 500; font-size: 11.5px; color: #374151;">Corporate website</label>
+          <input type="text" [(ngModel)]="lForm.website" placeholder="www.domain.com" [style.border]="formErrors['website'] ? '1px solid #EF4444' : '1px solid #D1D5DB'" style="padding: 0 8px; border-radius: 4px; font-size: 12px; height: 32px; box-sizing: border-box; width: 100%;">
+          @if (formErrors['website']) {
+            <span style="color: #EF4444; font-size: 10.5px;">{{ formErrors['website'] }}</span>
+          }
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 2px;">
+          <label style="font-weight: 500; font-size: 11.5px; color: #374151;">Street address</label>
+          <input type="text" [(ngModel)]="lForm.address" placeholder="Office details..." style="padding: 0 8px; border: 1px solid #D1D5DB; border-radius: 4px; font-size: 12px; height: 32px; box-sizing: border-box; width: 100%;">
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 2px;">
+          <label style="font-weight: 500; font-size: 11.5px; color: #374151;">City</label>
+          <input type="text" [(ngModel)]="lForm.city" style="padding: 0 8px; border: 1px solid #D1D5DB; border-radius: 4px; font-size: 12px; height: 32px; box-sizing: border-box; width: 100%;">
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 2px;">
+          <label style="font-weight: 500; font-size: 11.5px; color: #374151;">Country</label>
+          <input type="text" [(ngModel)]="lForm.country" style="padding: 0 8px; border: 1px solid #D1D5DB; border-radius: 4px; font-size: 12px; height: 32px; box-sizing: border-box; width: 100%;">
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 2px;">
+          <label style="font-weight: 500; font-size: 11.5px; color: #374151;">Industry sector</label>
+          <select [(ngModel)]="lForm.industry" style="padding: 0 8px; border: 1px solid #D1D5DB; border-radius: 4px; background: #fff; font-size: 12px; height: 32px; box-sizing: border-box; width: 100%;">
+            <option>General</option>
+            <option>Construction</option>
+            <option>Interior Design</option>
+            <option>Hospitality</option>
+            <option>Retail</option>
+            <option>Logistics</option>
+          </select>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 2px;">
+          <label style="font-weight: 500; font-size: 11.5px; color: #374151;">Lead source channel</label>
+          <select [(ngModel)]="lForm.source" style="padding: 0 8px; border: 1px solid #D1D5DB; border-radius: 4px; background: #fff; font-size: 12px; height: 32px; box-sizing: border-box; width: 100%;">
+            <option>Website</option>
+            <option>Referral</option>
+            <option>Social Media</option>
+            <option>Walk-in</option>
+            <option>Cold Call</option>
+          </select>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 2px;">
+          <label style="font-weight: 500; font-size: 11.5px; color: #374151;">Pipeline status</label>
+          <select [(ngModel)]="lForm.status" style="padding: 0 8px; border: 1px solid #D1D5DB; border-radius: 4px; background: #fff; font-size: 12px; height: 32px; box-sizing: border-box; width: 100%;">
+            <option>New</option>
+            <option>Contacted</option>
+            <option>Qualified</option>
+            <option>Lost</option>
+          </select>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 2px;">
+          <label style="font-weight: 500; font-size: 11.5px; color: #374151;">Assigned salesperson</label>
+          <select [(ngModel)]="lForm.assignedTo" style="padding: 0 8px; border: 1px solid #D1D5DB; border-radius: 4px; background: #fff; font-size: 12px; height: 32px; box-sizing: border-box; width: 100%;">
+            <option value="Unassigned">Unassigned</option>
+            @for (rep of salesRoster; track rep.id) {
+              <!-- Display only the name, but send the ID! -->
+              <option [value]="rep.id">{{ rep.name }}</option>
+            }
+          </select>
+        </div>
+        <div class="full-width" style="grid-column: span 2; display: flex; flex-direction: column; gap: 2px;">
+          <label style="font-weight: 500; font-size: 11.5px; color: #374151;">Internal summary notes / Remarks</label>
+          <textarea [(ngModel)]="lForm.remarks" placeholder="Enter administrative records or extra requirements details..." style="padding: 6px 8px; border: 1px solid #D1D5DB; border-radius: 4px; min-height: 50px; max-height: 120px; font-size: 12px; box-sizing: border-box; width: 100%; resize: vertical; font-family: inherit;"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-actions-row" style="display: flex; justify-content: flex-end; gap: 8px; border-top: 1px solid #F3F4F6; padding: 10px 16px; background: #fff; flex-shrink: 0;">
+      <button class="secondary-btn-sm" type="button" (click)="isFormModalOpen = false" style="padding: 6px 14px; border-radius: 4px; border: 1px solid #D1D5DB; background: #fff; color: #374151; font-size: 12px; cursor: pointer;">Cancel</button>
+      <button class="primary-btn-sm" type="button" (click)="saveLead()" style="padding: 6px 14px; border-radius: 4px; border: none; background: #1F3A40; color: #fff; font-weight: 500; font-size: 12px; cursor: pointer;">Save profile</button>
+    </div>
+  </div>
+</div>
+
+<!-- Detailed View Modal -->
+<div class="modal-overlay" *ngIf="selectedLead" [class.active]="isDetailModalOpen" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); align-items: center; justify-content: center; z-index: 1000;" [style.display]="isDetailModalOpen ? 'flex' : 'none'">
+  <div class="modal-box modal-wide" style="background: #fff; border-radius: 8px; width: 90%; max-width: 640px; max-height: 88vh; overflow: hidden; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.08); display: flex; flex-direction: column;">
+    
+    <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; background-color: #1F3A40; padding: 14px 16px; margin: 0; border-bottom: 1px solid rgba(0,0,0,0.05); border-top-left-radius: 8px; border-top-right-radius: 8px; width: 100%; box-sizing: border-box; flex-shrink: 0;">
+      <h3 style="margin: 0; font-size: 14px; font-weight: 700; color: #ffffff; letter-spacing: 0.3px;">Lead detailed view — {{ formatDisplayId(selectedLead.id) }}</h3>
+      <button class="modal-close-btn" type="button" (click)="isDetailModalOpen = false" style="background: none; border: none; font-size: 22px; cursor: pointer; color: #ffffff; line-height: 1; opacity: 0.85; transition: opacity 0.15s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.85'">&times;</button>
+    </div>
+
+    <div style="padding: 16px; overflow-y: auto; flex: 1;">
+      <div class="detail-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px 14px; margin-bottom: 4px; background: #F9FAFB; padding: 14px; border-radius: 6px; border: 1px solid #E5E7EB; font-size: 12.5px;">
+        <div>
+          <span style="display: block; font-size: 10.5px; font-weight: 600; color: #6B7280; text-transform: uppercase;">Lead Representative Name</span>
+          <strong style="color: #111827; font-size: 13px;">{{ selectedLead.name }}</strong>
+        </div>
+        <div>
+          <span style="display: block; font-size: 10.5px; font-weight: 600; color: #6B7280; text-transform: uppercase;">Company Entity</span>
+          <span style="color: #374151;">{{ selectedLead.company || '--' }}</span>
+        </div>
+        <div>
+          <span style="display: block; font-size: 10.5px; font-weight: 600; color: #6B7280; text-transform: uppercase;">Designation Title</span>
+          <span style="color: #374151;">{{ selectedLead.contact || '--' }}</span>
+        </div>
+        <div>
+          <span style="display: block; font-size: 10.5px; font-weight: 600; color: #6B7280; text-transform: uppercase;">Email Address</span>
+          <span style="color: #374151;">{{ selectedLead.email || '--' }}</span>
+        </div>
+        <div>
+          <span style="display: block; font-size: 10.5px; font-weight: 600; color: #6B7280; text-transform: uppercase;">Mobile / Phone No.</span>
+          <span style="color: #374151;">{{ selectedLead.mobile || '--' }}</span>
+        </div>
+        <div>
+          <span style="display: block; font-size: 10.5px; font-weight: 600; color: #6B7280; text-transform: uppercase;">WhatsApp Connection</span>
+          <span style="color: #374151;">{{ selectedLead.whatsapp || '--' }}</span>
+        </div>
+        <div>
+          <span style="display: block; font-size: 10.5px; font-weight: 600; color: #6B7280; text-transform: uppercase;">Industry Segment</span>
+          <span style="color: #374151;">{{ selectedLead.industry }}</span>
+        </div>
+        <div>
+          <span style="display: block; font-size: 10.5px; font-weight: 600; color: #6B7280; text-transform: uppercase;">Lead Channel Source</span>
+          <span style="color: #374151;">{{ selectedLead.source }}</span>
+        </div>
+        <div>
+          <span style="display: block; font-size: 10.5px; font-weight: 600; color: #6B7280; text-transform: uppercase;">Pipeline Lifecycle Status</span>
+          <span class="status-badge" 
+                [style.background]="selectedLead.status === 'New' ? '#EFF6FF' : selectedLead.status === 'Contacted' ? '#FEF3C7' : selectedLead.status === 'Qualified' ? '#DCFCE7' : '#FEE2E2'"
+                [style.color]="selectedLead.status === 'New' ? '#2563EB' : selectedLead.status === 'Contacted' ? '#D97706' : selectedLead.status === 'Qualified' ? '#16A34A' : '#EF4444'"
+                style="padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: 600; display: inline-block;">
+            {{ selectedLead.status }}
+          </span>
+        </div>
+        <div>
+          <span style="display: block; font-size: 10.5px; font-weight: 600; color: #6B7280; text-transform: uppercase;">Account Owner</span>
+          <span style="color: #374151; font-weight: 500;">{{ selectedLead.assignedTo }}</span>
+        </div>
+        <div style="grid-column: span 2;">
+          <span style="display: block; font-size: 10.5px; font-weight: 600; color: #6B7280; text-transform: uppercase;">Corporate Address</span>
+          <span style="color: #374151;">{{ selectedLead.address }}{{ selectedLead.city ? ', ' + selectedLead.city : '' }}{{ selectedLead.country ? ', ' + selectedLead.country : '' }}</span>
+        </div>
+        <div style="grid-column: span 2; border-top: 1px solid #E5E7EB; padding-top: 8px;">
+          <span style="display: block; font-size: 10.5px; font-weight: 600; color: #6B7280; text-transform: uppercase;">Internal Notes & Summary Remarks</span>
+          <p style="color: #4B5563; margin: 4px 0 0 0; line-height: 1.4; font-size: 12px; white-space: pre-line;">{{ selectedLead.remarks || 'No notes added to this lead entry profile.' }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-actions-row" style="display: flex; justify-content: flex-end; gap: 8px; border-top: 1px solid #F3F4F6; padding: 10px 16px; background: #fff; flex-shrink: 0;">
+      <button class="secondary-btn-sm" type="button" (click)="isDetailModalOpen = false" style="padding: 6px 14px; border-radius: 4px; border: 1px solid #D1D5DB; background: #fff; color: #374151; font-size: 12px; cursor: pointer;">Close Directory View</button>
+    </div>
+  </div>
+</div>
+
+<!-- Convert Lead Modal (EXACT FIX: max-height: 85vh, overflow: hidden, inner scrollable div) -->
+<div class="modal-overlay" [class.active]="isConvertModalOpen" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); align-items: center; justify-content: center; z-index: 1001;" [style.display]="isConvertModalOpen ? 'flex' : 'none'">
+  <div class="modal-box" style="width: 100%; max-width: 580px; max-height: 85vh; background: #ffffff; padding: 0; border-radius: 8px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08); display: flex; flex-direction: column; overflow: hidden;">
+    
+    <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background-color: #1F3A40; flex-shrink: 0;">
+      <h3 style="font-size: 14px; font-weight: 600; color: #ffffff; margin: 0; letter-spacing: 0.3px;">Convert Lead to Opportunity Parameters</h3>
+      <button class="modal-close-btn" type="button" (click)="isConvertModalOpen = false" style="font-size: 20px; color: #ffffff; opacity: 0.8; background: none; border: none; cursor: pointer; line-height: 1;">&times;</button>
+    </div>
+
+    <!-- Scrollable Form Container -->
+    <div style="padding: 14px 16px; overflow-y: auto; flex: 1;">
+      <div class="lead-full-form-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 12px;">
+        
+        <div class="full-width" style="grid-column: span 2; display: flex; flex-direction: column; gap: 2px;">
+          <label style="font-size: 11.5px; font-weight: 500; color: #374151;">Generated Lead Reference ID</label>
+          <input type="text" [value]="formatDisplayId(convertForm.leadId) + ' — ' + convertForm.leadName" disabled style="height: 32px; padding: 0 8px; border: 1px solid #D1D5DB; border-radius: 4px; font-size: 12px; background: #F3F4F6; color: #4B5563;">
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 2px;">
+          <label style="font-size: 11.5px; font-weight: 500; color: #374151;">Company Name</label>
+          <input type="text" [(ngModel)]="convertForm.companyName" style="height: 32px; padding: 0 8px; border: 1px solid #D1D5DB; border-radius: 4px; font-size: 12px;">
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 2px;">
+          <label style="font-size: 11.5px; font-weight: 500; color: #374151;">Assigned Representative</label>
+          <input type="text" [(ngModel)]="convertForm.assignedToName" style="height: 32px; padding: 0 8px; border: 1px solid #D1D5DB; border-radius: 4px; font-size: 12px;">
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 2px;">
+          <label style="font-size: 11.5px; font-weight: 500; color: #374151;">Expected Revenue (AED) *</label>
+          <input type="number" [(ngModel)]="convertForm.expectedRevenue" style="height: 32px; padding: 0 8px; border: 1px solid #D1D5DB; border-radius: 4px; font-size: 12px;" placeholder="e.g. 50000">
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 2px;">
+          <label style="font-size: 11.5px; font-weight: 500; color: #374151;">Deal Probability % *</label>
+          <input type="number" [(ngModel)]="convertForm.probabilityPct" (input)="validateProb()" style="height: 32px; padding: 0 8px; border: 1px solid #D1D5DB; border-radius: 4px; font-size: 12px;" placeholder="0-100">
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 2px;">
+          <label style="font-size: 11.5px; font-weight: 500; color: #374151;">Expected Closing Date *</label>
+          <input type="date" [(ngModel)]="convertForm.expectedClosingDate" style="height: 32px; padding: 0 8px; border: 1px solid #D1D5DB; border-radius: 4px; font-size: 12px;">
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 2px;">
+          <label style="font-size: 11.5px; font-weight: 500; color: #374151;">Sales Stage</label>
+          <select [(ngModel)]="convertForm.salesStage" (change)="onConvertStageChange()" style="height: 32px; padding: 0 8px; border: 1px solid #D1D5DB; border-radius: 4px; background-color: #fff; font-size: 12px;">
+            <option>New</option>
+            <option>Qualified</option>
+            <option>Proposal Sent</option>
+            <option>Quotation</option>
+            <option>Negotiation</option>
+            <option>Won</option>
+            <option>Lost</option>
+          </select>
+        </div>
+
+        <div class="full-width" style="grid-column: span 2; display: flex; flex-direction: column; gap: 2px;">
+          <label style="font-size: 11.5px; font-weight: 500; color: #374151;">Primary Competitor</label>
+          <input type="text" [(ngModel)]="convertForm.competitor" placeholder="Enterprise tags" style="height: 32px; padding: 0 8px; border: 1px solid #D1D5DB; border-radius: 4px; font-size: 12px;">
+        </div>
+
+        <div class="full-width" style="grid-column: span 2; display: flex; flex-direction: column; gap: 2px;">
+          <label style="font-size: 11.5px; font-weight: 500; color: #374151;">Internal Strategy Notes</label>
+          <textarea [(ngModel)]="convertForm.notes" placeholder="Deal summaries..." style="min-height: 50px; padding: 6px 8px; border: 1px solid #D1D5DB; border-radius: 4px; font-family: inherit; resize: vertical; font-size: 12px;"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pinned Footer Buttons -->
+    <div class="modal-actions-row" style="display: flex; justify-content: flex-end; gap: 8px; padding: 10px 16px; border-top: 1px solid #F3F4F6; background: #fff; flex-shrink: 0;">
+      <button class="secondary-btn-sm" type="button" (click)="isConvertModalOpen = false" style="padding: 6px 14px; border: 1px solid #D1D5DB; border-radius: 4px; background: #fff; color: #374151; font-size: 12px; font-weight: 500; cursor: pointer;">Cancel</button>
+      <button class="primary-btn-sm" type="button" (click)="executeConversion()" style="padding: 6px 14px; border: none; border-radius: 4px; background: #1F3A40; color: #fff; font-size: 12px; font-weight: 500; cursor: pointer;">Save to Pipeline</button>
+    </div>
+  </div>
+</div>

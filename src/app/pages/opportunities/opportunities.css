@@ -1,0 +1,122 @@
+/* Container layout constraints */
+.pipeline-table-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+}
+
+.pipeline-table-card table {
+  margin-bottom: 0;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+/* Action Toolbar Architecture */
+.action-toolbar-set {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  align-items: center;
+  padding-right: 8px;
+}
+
+/* Base Senior Action Button Styles */
+.action-btn-base {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 12px;
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.action-btn-base svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+/* Edit State: Neutral Secondary Refinement */
+.action-btn-edit {
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  color: #374151;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.action-btn-edit:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+  color: #111827;
+}
+
+/* Convert State: Vibrant Success Focus */
+.action-btn-convert {
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  color: #065f46;
+  font-weight: 600;
+  box-shadow: 0 1px 2px rgba(4, 120, 87, 0.05);
+}
+
+.action-btn-convert:hover {
+  background: #d1fae5;
+  border-color: #6ee7b7;
+  color: #047857;
+}
+
+/* Delete Icon Trigger: Minimalist Danger Boundary */
+.action-btn-delete {
+  width: 32px;
+  padding: 0;
+  background: #ffffff;
+  border: 1px solid #f3f4f6;
+  color: #9ca3af;
+}
+
+.action-btn-delete:hover {
+  background: #fef2f2;
+  border-color: #fee2e2;
+  color: #dc2626;
+}
+
+/* Elegant Table Summary Footer Block */
+.table-summary-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 24px;
+  background: #fafafa;
+  border-top: 1px solid #e5e7eb;
+}
+
+.footer-add-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 14px;
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  color: #2563eb;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  transition: all 0.15s ease;
+}
+
+.footer-add-trigger:hover {
+  background: #f8fafc;
+  border-color: #2563eb;
+  box-shadow: 0 1px 3px rgba(37, 99, 235, 0.1);
+}

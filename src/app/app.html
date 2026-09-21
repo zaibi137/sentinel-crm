@@ -1,0 +1,169 @@
+<div class="dashboard-wrapper" style="min-height: 100vh; background-color: #F8FAFC; width: 100%; box-sizing: border-box;">
+
+  @if (showSidebar) {
+    <aside class="sidebar" 
+           [style.width]="isCollapsed ? '68px' : '240px'"
+           style="
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: space-between; 
+            background-color: #1F3A40; 
+            z-index: 1000;
+            overflow: hidden;
+            transition: width 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            border-right: 1px solid rgba(255,255,255,0.05);
+            box-sizing: border-box;
+           ">
+      
+      <div style="display: flex; flex-direction: column; width: 100%; box-sizing: border-box;">
+        
+        <div class="sidebar-header" 
+             [style.flexDirection]="isCollapsed ? 'column' : 'row'"
+             [style.justifyContent]="isCollapsed ? 'center' : 'space-between'"
+             [style.padding]="isCollapsed ? '16px 0px' : '16px 14px'"
+             [style.gap]="isCollapsed ? '12px' : '0px'"
+             style="display: flex; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.08); min-height: 65px; width: 100%; box-sizing: border-box; transition: all 0.2s ease;">
+          
+          <div style="display: flex; align-items: center; justify-content: center; gap: 10px; width: auto; flex-shrink: 0; box-sizing: border-box;">
+            <img src="sid-logo.png" alt="SID" style="width: 55px; height: 55px; object-fit: contain; flex-shrink: 0; display: block; margin: 0 auto; border-radius: 4px;">
+            @if (!isCollapsed) {
+              <span class="logo-text" style="font-size: 15px; font-weight: 700; color: #ffffff; letter-spacing: 0.8px; white-space: nowrap;"></span>
+            }
+          </div>
+
+          <button type="button" (click)="toggleSidebar()" title="Toggle Sidebar View" 
+                  style="background: rgba(255,255,255,0.08); border: none; cursor: pointer; border-radius: 4px; padding: 6px 8px; display: flex; align-items: center; justify-content: center; color: #ffffff; flex-shrink: 0; margin: 0; box-sizing: border-box;">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width: 16px; height: 16px;">
+              <rect x="3" y="3" width="18" height="18" rx="4" stroke="currentColor" stroke-width="2"/>
+              <line x1="9" y1="3" x2="9" y2="21" stroke="currentColor" stroke-width="2"/>
+            </svg>
+          </button>
+        </div>
+
+        <nav class="sidebar-nav" style="display: flex; flex-direction: column; gap: 4px; padding: 0 10px; margin-top: 12px; box-sizing: border-box;">
+          
+          <a routerLink="/dashboard" routerLinkActive #rlaDash="routerLinkActive" class="nav-item" 
+             [style.backgroundColor]="rlaDash.isActive ? 'rgba(255, 255, 255, 0.12)' : 'transparent'"
+             [style.color]="rlaDash.isActive ? '#ffffff' : '#94A3B8'"
+             [style.borderLeft]="rlaDash.isActive ? '3px solid #38BDF8' : '3px solid transparent'"
+             style="display: flex; align-items: center; gap: 12px; padding: 10px 12px; text-decoration: none; font-size: 13px; font-weight: 500; border-radius: 0 6px 6px 0; transition: all 0.15s ease; white-space: nowrap; box-sizing: border-box;"
+             onmouseover="this.style.backgroundColor='rgba(255,255,255,0.06)'" 
+             onmouseout="this.style.backgroundColor=this.getAttribute('data-active') === 'true' ? 'rgba(255,255,255,0.12)' : 'transparent'"
+             [attr.data-active]="rlaDash.isActive">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width: 18px; height: 18px; flex-shrink: 0;"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" /></svg>
+            @if (!isCollapsed) { <span>Dashboard</span> }
+          </a>
+
+          <a routerLink="/leads" routerLinkActive #rlaLeads="routerLinkActive" class="nav-item" 
+             [style.backgroundColor]="rlaLeads.isActive ? 'rgba(255, 255, 255, 0.12)' : 'transparent'"
+             [style.color]="rlaLeads.isActive ? '#ffffff' : '#94A3B8'"
+             [style.borderLeft]="rlaLeads.isActive ? '3px solid #38BDF8' : '3px solid transparent'"
+             style="display: flex; align-items: center; gap: 12px; padding: 10px 12px; text-decoration: none; font-size: 13px; font-weight: 500; border-radius: 0 6px 6px 0; transition: all 0.15s ease; white-space: nowrap; box-sizing: border-box;"
+             onmouseover="this.style.backgroundColor='rgba(255,255,255,0.06)'" 
+             onmouseout="this.style.backgroundColor=this.getAttribute('data-active') === 'true' ? 'rgba(255,255,255,0.12)' : 'transparent'"
+             [attr.data-active]="rlaLeads.isActive">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width: 18px; height: 18px; flex-shrink: 0;"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" /></svg>
+            @if (!isCollapsed) { <span>Leads</span> }
+          </a>
+
+          <a routerLink="/opportunities" routerLinkActive #rlaOpps="routerLinkActive" class="nav-item" 
+             [style.backgroundColor]="rlaOpps.isActive ? 'rgba(255, 255, 255, 0.12)' : 'transparent'"
+             [style.color]="rlaOpps.isActive ? '#ffffff' : '#94A3B8'"
+             [style.borderLeft]="rlaOpps.isActive ? '3px solid #38BDF8' : '3px solid transparent'"
+             style="display: flex; align-items: center; gap: 12px; padding: 10px 12px; text-decoration: none; font-size: 13px; font-weight: 500; border-radius: 0 6px 6px 0; transition: all 0.15s ease; white-space: nowrap; box-sizing: border-box;"
+             onmouseover="this.style.backgroundColor='rgba(255,255,255,0.06)'" 
+             onmouseout="this.style.backgroundColor=this.getAttribute('data-active') === 'true' ? 'rgba(255,255,255,0.12)' : 'transparent'"
+             [attr.data-active]="rlaOpps.isActive">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width: 18px; height: 18px; flex-shrink: 0;"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" /></svg>
+            @if (!isCollapsed) { <span>Opportunities</span> }
+          </a>
+
+          <a routerLink="/customers" routerLinkActive #rlaCust="routerLinkActive" class="nav-item" 
+             [style.backgroundColor]="rlaCust.isActive ? 'rgba(255, 255, 255, 0.12)' : 'transparent'"
+             [style.color]="rlaCust.isActive ? '#ffffff' : '#94A3B8'"
+             [style.borderLeft]="rlaCust.isActive ? '3px solid #38BDF8' : '3px solid transparent'"
+             style="display: flex; align-items: center; gap: 12px; padding: 10px 12px; text-decoration: none; font-size: 13px; font-weight: 500; border-radius: 0 6px 6px 0; transition: all 0.15s ease; white-space: nowrap; box-sizing: border-box;"
+             onmouseover="this.style.backgroundColor='rgba(255,255,255,0.06)'" 
+             onmouseout="this.style.backgroundColor=this.getAttribute('data-active') === 'true' ? 'rgba(255,255,255,0.12)' : 'transparent'"
+             [attr.data-active]="rlaCust.isActive">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width: 18px; height: 18px; flex-shrink: 0;"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" /></svg>
+            @if (!isCollapsed) { <span>Customers</span> }
+          </a>
+
+          <a routerLink="/activities" routerLinkActive #rlaActs="routerLinkActive" class="nav-item" 
+             [style.backgroundColor]="rlaActs.isActive ? 'rgba(255, 255, 255, 0.12)' : 'transparent'"
+             [style.color]="rlaActs.isActive ? '#ffffff' : '#94A3B8'"
+             [style.borderLeft]="rlaActs.isActive ? '3px solid #38BDF8' : '3px solid transparent'"
+             style="display: flex; align-items: center; gap: 12px; padding: 10px 12px; text-decoration: none; font-size: 13px; font-weight: 500; border-radius: 0 6px 6px 0; transition: all 0.15s ease; white-space: nowrap; box-sizing: border-box;"
+             onmouseover="this.style.backgroundColor='rgba(255,255,255,0.06)'" 
+             onmouseout="this.style.backgroundColor=this.getAttribute('data-active') === 'true' ? 'rgba(255,255,255,0.12)' : 'transparent'"
+             [attr.data-active]="rlaActs.isActive">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width: 18px; height: 18px; flex-shrink: 0;"><path stroke-linecap="round" stroke-linejoin="round" d="M6 7.5h.008v.008H6V7.5zM6 12h.008v.008H6V12zm0 4.5h.008v.008H6v-.008zm-2.25-12h16.5c.621 0 1.125.504 1.125 1.125v14.25c0 .621-.504 1.125-1.125 1.125H3.75c-.621 0-1.125-.504-1.125-1.125V5.625c0-.621.504-1.125 1.125-1.125zM10 7.5h7.5m-7.5 4.5h7.5m-7.5 4.5h7.5" /></svg>
+            @if (!isCollapsed) { <span>Activities &amp; Tasks</span> }
+          </a>
+
+          <a routerLink="/users" routerLinkActive #rlaUsers="routerLinkActive" class="nav-item" 
+             [style.backgroundColor]="rlaUsers.isActive ? 'rgba(255, 255, 255, 0.12)' : 'transparent'"
+             [style.color]="rlaUsers.isActive ? '#ffffff' : '#94A3B8'"
+             [style.borderLeft]="rlaUsers.isActive ? '3px solid #38BDF8' : '3px solid transparent'"
+             style="display: flex; align-items: center; gap: 12px; padding: 10px 12px; text-decoration: none; font-size: 13px; font-weight: 500; border-radius: 0 6px 6px 0; transition: all 0.15s ease; white-space: nowrap; box-sizing: border-box;"
+             onmouseover="this.style.backgroundColor='rgba(255,255,255,0.06)'" 
+             onmouseout="this.style.backgroundColor=this.getAttribute('data-active') === 'true' ? 'rgba(255,255,255,0.12)' : 'transparent'"
+             [attr.data-active]="rlaUsers.isActive">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width: 18px; height: 18px; flex-shrink: 0;"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.656-5.64 9.094 9.094 0 00-1.902 6.116m-11.121 0a9.094 9.094 0 013.741-.479 3 3 0 01-4.656-5.64 9.094 9.094 0 01-1.902 6.116m12-12a3 3 0 11-6 0 3 3 0 016 0zm6.5 7.5a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0zm-14 0a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" /></svg>
+            @if (!isCollapsed) { <span>Sales Team</span> }
+          </a>
+
+        </nav>
+      </div>
+
+      <button (click)="logout()" class="logout-btn" type="button" title="Sign Out from SID CRM"
+              [style.justifyContent]="isCollapsed ? 'center' : 'flex-start'"
+              [style.padding]="isCollapsed ? '10px 0px' : '10px 15px'"
+              style="
+                margin: 0 10px 16px 10px; 
+                cursor: pointer; 
+                display: flex; 
+                align-items: center; 
+                gap: 12px; 
+                background: rgba(255, 255, 255, 0.05); 
+                color: #94A3B8; 
+                border: 1px solid rgba(255, 255, 255, 0.08); 
+                border-radius: 6px; 
+                font-size: 13px; 
+                font-weight: 500;
+                white-space: nowrap;
+                transition: all 0.15s ease-in-out;
+                box-sizing: border-box;
+              "
+              onmouseover="this.style.backgroundColor='rgba(239, 68, 68, 0.1)'; this.style.color='#F87171'; this.style.borderColor='rgba(239, 68, 68, 0.2)';"
+              onmouseout="this.style.backgroundColor='rgba(255, 255, 255, 0.05)'; this.style.color='#94A3B8'; this.style.borderColor='rgba(255, 255, 255, 0.08)';">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.2" stroke="currentColor" style="width: 18px; height: 18px; flex-shrink: 0;">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M5.636 5.636a9 9 0 1012.728 0M12 3v9" />
+        </svg>
+        
+        @if (!isCollapsed) { <span>Log out</span> }
+      </button>
+
+    </aside>
+  }
+
+  <main class="main-content" 
+        [style.margin-left]="showSidebar ? (isCollapsed ? '68px' : '240px') : '0px'" 
+        [style.width]="showSidebar ? (isCollapsed ? 'calc(100% - 68px)' : 'calc(100% - 240px)') : '100%'" 
+        [style.padding]="showSidebar ? '14px 20px' : '0px'"
+        style="
+          min-height: 100vh; 
+          background-color: #F8FAFC; 
+          box-sizing: border-box;
+          transition: margin-left 0.2s cubic-bezier(0.4, 0, 0.2, 1), width 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        ">
+    <router-outlet></router-outlet>
+  </main>
+
+</div>

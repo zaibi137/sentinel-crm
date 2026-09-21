@@ -1,0 +1,214 @@
+<div class="login-viewport-container">
+  
+  @if(showToast) {
+    <div class="toast-container">
+      <div class="toast-message" 
+           [class.toast-success]="toastType === 'success'"
+           [class.toast-error]="toastType === 'error'"
+           [class.toast-info]="toastType === 'info'">
+        <div class="toast-icon">
+          @if(toastType === 'success') { ✅ }
+          @if(toastType === 'error') { ❌ }
+          @if(toastType === 'info') { ℹ️ }
+        </div>
+        <div class="toast-text">{{ toastMessage }}</div>
+        <button class="toast-close" (click)="hideToast()">✕</button>
+      </div>
+    </div>
+  }
+
+  <div class="login-card-surface">
+
+    <div class="login-brand-header">
+      <div style="
+      width:64px;
+      height:64px;
+      background:#fff;
+      border-radius:12px;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      margin:auto;
+      margin-bottom:15px;">
+        <img
+          src="/sid-logo.png"
+          alt="SID CRM"
+          style="width:80px;height:80px;object-fit:contain;border-radius:12px;">
+      </div>
+      <p>Secure Enterprise Portal Access</p>
+    </div>
+
+    @if(errorMessage){
+    <div class="auth-error-banner">
+      {{errorMessage}}
+    </div>
+    }
+
+    @if(currentAuthView === 'login') {
+      <form (ngSubmit)="onLoginSubmit()" #loginForm="ngForm">
+        <div class="input-field-group">
+          <label>Email</label>
+          <input
+            type="email"
+            name="email"
+            [(ngModel)]="loginData.email"
+            placeholder="admin@sentinel.com"
+            required>
+        </div>
+
+        <div class="input-field-group">
+          <label>Password</label>
+          <div class="password-wrapper">
+            <input
+              [type]="showLoginPassword ? 'text' : 'password'"
+              name="password"
+              [(ngModel)]="loginData.password"
+              placeholder="********"
+              required>
+            <button type="button" class="toggle-password" (click)="showLoginPassword = !showLoginPassword">
+              @if(!showLoginPassword) {
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+              } @else {
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+              }
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" class="submit-auth-btn" [disabled]="isLoading">
+          @if(isLoading){
+            <span class="auth-loading-spinner"></span> Authenticating...
+          } @else {
+            Sign In
+          }
+        </button>
+
+        <div style="margin-top:18px;text-align:center;">
+          <button type="button" (click)="switchView('forgot')" style="border:none; background:none; color:#2563EB; cursor:pointer; font-size:14px; font-weight:600;">
+            Forgot Password?
+          </button>
+        </div>
+      </form>
+    }
+
+    @if(currentAuthView === 'forgot') {
+      <form (ngSubmit)="sendOtp()">
+        <p style="text-align: center; color: #4B5563; font-size: 14px; margin-bottom: 20px; line-height: 1.5;">
+          Enter your registered email address to receive a 6-digit One-Time Password (OTP).
+        </p>
+
+        <div class="input-field-group">
+          <label>Email Address</label>
+          <input
+            type="email"
+            name="forgotEmail"
+            [(ngModel)]="forgotEmail"
+            placeholder="example@gmail.com"
+            required>
+        </div>
+
+        <button type="submit" class="submit-auth-btn" [disabled]="isLoading">
+          @if(isLoading){ Sending OTP... } @else { Send OTP }
+        </button>
+
+        <div style="margin-top:18px;text-align:center;">
+          <button type="button" (click)="switchView('login')" style="border:none; background:none; color:#4B5563; cursor:pointer; font-size:14px; font-weight:500;">
+            ← Back to Sign In
+          </button>
+        </div>
+      </form>
+    }
+
+    @if(currentAuthView === 'otp') {
+      <form (ngSubmit)="verifyOtp()">
+        <p style="text-align: center; color: #4B5563; font-size: 14px; margin-bottom: 20px;">
+          Enter the 6-digit verification OTP sent to <strong>{{ forgotEmail }}</strong>.
+        </p>
+
+        <div class="otp-container">
+          <input
+            *ngFor="let digit of otpDigits; let i = index"
+            type="text"
+            maxlength="1"
+            [id]="'otp-' + i"
+            [(ngModel)]="otpArray[i]"
+            [ngModelOptions]="{standalone: true}"
+            (input)="onOTPInput($event, i)"
+            (keydown)="onOTPKeyDown($event, i)"
+            (paste)="onOTPPaste($event)"
+            class="otp-box"
+            [class.otp-error]="otpError"
+            (focus)="onOTPFocus(i)"
+            [disabled]="isLoading"
+            [autofocus]="i === 0"
+          />
+        </div>
+
+        <div *ngIf="otpError" class="otp-error-message">
+          {{ otpError }}
+        </div>
+
+        <button type="submit" class="submit-auth-btn" [disabled]="isLoading || !isOTPComplete">
+          @if(isLoading){ Verifying OTP... } @else { Verify OTP }
+        </button>
+
+        <div style="margin-top:18px;text-align:center;">
+          <button type="button" (click)="switchView('forgot')" style="border:none; background:none; color:#4B5563; cursor:pointer; font-size:14px; font-weight:500;">
+            ← Back
+          </button>
+        </div>
+      </form>
+    }
+
+    @if(currentAuthView === 'reset') {
+      <form (ngSubmit)="resetPassword()">
+        <p style="text-align: center; color: #4B5563; font-size: 14px; margin-bottom: 20px;">
+          Create a secure new password for your account.
+        </p>
+
+        <div class="input-field-group">
+          <label>New Password</label>
+          <div class="password-wrapper">
+            <input
+              [type]="showNewPassword ? 'text' : 'password'"
+              name="newPassword"
+              [(ngModel)]="resetPasswordData.newPassword"
+              placeholder="New Password"
+              required>
+            <button type="button" class="toggle-password" (click)="showNewPassword = !showNewPassword">
+              @if(!showNewPassword) {
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+              } @else {
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+              }
+            </button>
+          </div>
+        </div>
+
+        <div class="input-field-group" style="margin-top: 12px;">
+          <label>Confirm Password</label>
+          <div class="password-wrapper">
+            <input
+              [type]="showConfirmPassword ? 'text' : 'password'"
+              name="confirmPassword"
+              [(ngModel)]="resetPasswordData.confirmPassword"
+              placeholder="Confirm Password"
+              required>
+            <button type="button" class="toggle-password" (click)="showConfirmPassword = !showConfirmPassword">
+              @if(!showConfirmPassword) {
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+              } @else {
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+              }
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" class="submit-auth-btn" [disabled]="isLoading">
+          @if(isLoading){ Resetting Password... } @else { Reset Password }
+        </button>
+      </form>
+    }
+
+  </div>
+</div>

@@ -1,0 +1,119 @@
+<div class="dashboard-wrapper">
+
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <span class="logo-mark">S</span>
+      <span class="logo-text">Sentinel CRM</span>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a routerLink="/dashboard" class="nav-item">Dashboard</a>
+      <a routerLink="/leads" class="nav-item">Leads</a>
+      <a routerLink="/opportunities" class="nav-item">Opportunities</a>
+      <a routerLink="/customers" class="nav-item">Customers</a>
+      <a routerLink="/activities" class="nav-item">Activities &amp; Tasks</a>
+      <a routerLink="/agents" class="nav-item active">Sales Agents</a>
+    </nav>
+
+    <button (click)="logout()" class="logout-btn" type="button">
+      <span>Logout</span>
+    </button>
+  </aside>
+
+  <main class="main-content">
+
+    <div class="page-header">
+      <h2>Sales Team Performance</h2>
+    </div>
+
+    <div class="kpi-row">
+      <div class="kpi-card">
+        <div class="kpi-icon icon-emerald">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+        </div>
+        <div>
+          <div class="kpi-value">AED {{ teamKPIs.totalRevenue.toLocaleString() }}</div>
+          <div class="kpi-label">Team revenue (won)</div>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-icon icon-amber">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+        </div>
+        <div>
+          <div class="kpi-value">{{ teamKPIs.winRate }}</div>
+          <div class="kpi-label">Team win rate</div>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-icon icon-purple">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>
+        </div>
+        <div>
+          <div class="kpi-value">AED {{ teamKPIs.openPipeline.toLocaleString() }}</div>
+          <div class="kpi-label">Open pipeline</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-header" style="margin-top: 35px;">
+      <h3>Sales Agents Breakdown</h3>
+    </div>
+
+    <div class="agents-grid">
+      @for (agent of agents; track agent.name) {
+        <div class="agent-card">
+          <div class="agent-profile-row">
+            <div class="agent-avatar">{{ agent.initials }}</div>
+            <div>
+              <div class="agent-name">{{ agent.name }}</div>
+              <div class="agent-role">{{ agent.role }}</div>
+            </div>
+          </div>
+
+          <div class="agent-stats-row">
+            <div class="agent-stat-item">
+              <div class="agent-stat-value">{{ agent.leadCount }}</div>
+              <div class="agent-stat-label">Leads</div>
+            </div>
+            <div class="agent-stat-item">
+              <div class="agent-stat-value">{{ agent.oppCount }}</div>
+              <div class="agent-stat-label">Opportunities</div>
+            </div>
+            <div class="agent-stat-item">
+              <div class="agent-stat-value">{{ agent.wonCount }}</div>
+              <div class="agent-stat-label">Deals won</div>
+            </div>
+            <div class="agent-stat-item">
+              <div class="agent-stat-value">{{ agent.lostCount }}</div>
+              <div class="agent-stat-label">Deals lost</div>
+            </div>
+          </div>
+
+          <div class="agent-revenue-row">
+            <div class="agent-revenue-label">Revenue won</div>
+            <div class="agent-revenue-value">AED {{ agent.revenue.toLocaleString() }}</div>
+            
+            <div style="display:flex; justify-content:space-between; font-size:11.5px; color:#6B7280; margin-top:12px;">
+              <span>Win rate</span>
+              <span style="font-weight:600;">
+                {{ (agent.wonCount + agent.lostCount) > 0 ? getWinRatePercent(agent) + '%' : 'No decided deals' }}
+              </span>
+            </div>
+
+            <div class="win-rate-track">
+              <div class="win-rate-fill" [style.width.%]="getWinRatePercent(agent)"></div>
+            </div>
+            
+            <div style="font-size:11px; color:#9CA3AF; margin-top:10px;">
+              AED {{ agent.pipelineValue.toLocaleString() }} still open pipeline...
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+
+  </main>
+</div>
