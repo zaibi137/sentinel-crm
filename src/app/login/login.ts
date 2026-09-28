@@ -21,9 +21,10 @@ export class LoginComponent {
   showNewPassword = false;
   showConfirmPassword = false;
 
+  // Pre-filled demo credentials for instant access
   loginData = {
-    email: '',
-    password: ''
+    email: 'admin@crm.com',
+    password: 'password123'
   };
   isLoading = false;
   errorMessage = '';

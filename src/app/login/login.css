@@ -4,28 +4,25 @@ html, body {
   padding: 0;
   width: 100%;
   height: 100vh;
-  overflow: hidden; /* Scrollbar ko completely khatam karne ke liye */
+  overflow: hidden;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
-/* Main background dispersion frame */
 .login-viewport-container {
   width: 100%;
   height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  /* Dark backdrop layout color disperse karne ke liye */
   background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
   padding: 20px;
   box-sizing: border-box;
 }
 
-/* Card layout surface wrapper design */
 .login-card-surface {
   background-color: #FFFFFF;
   width: 100%;
-  max-width: 450px; /* Card ki responsive width */
+  max-width: 450px;
   border-radius: 16px;
   padding: 40px 32px;
   box-sizing: border-box;
@@ -34,7 +31,6 @@ html, body {
   flex-direction: column;
 }
 
-/* Top Branding Header Structure */
 .login-brand-header {
   text-align: center;
   margin-bottom: 28px;
@@ -67,7 +63,6 @@ html, body {
   margin: 0;
 }
 
-/* Error Banner Alerts Styling */
 .auth-error-banner {
   background-color: #FEF2F2;
   border: 1px solid #FCA5A5;
@@ -81,7 +76,6 @@ html, body {
   font-size: 13px;
 }
 
-/* Input Fields & Text Alignment */
 .input-field-group {
   margin-bottom: 20px;
   display: flex;
@@ -96,26 +90,6 @@ html, body {
   margin-bottom: 6px;
 }
 
-.label-row-split {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.forgot-password-link {
-  font-size: 12px;
-  color: #2563EB;
-  text-decoration: none;
-  font-weight: 500;
-}
-
-.forgot-password-link:hover {
-  text-decoration: underline;
-}
-
-/* FIXED: was ".input-icon-wrapper input" but login.html doesn't wrap
-   inputs in .input-icon-wrapper — inputs sit directly inside
-   .input-field-group, so the selector is corrected to match. */
 .input-field-group input {
   width: 100%;
   padding: 12px 16px;
@@ -135,11 +109,10 @@ html, body {
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
 }
 
-/* Submit Authentication Button */
 .submit-auth-btn {
   width: 100%;
   padding: 12px;
-  background-color: #102A43; /* Sidebar key color matrix match */
+  background-color: #102A43;
   color: #FFFFFF;
   border: none;
   border-radius: 8px;
@@ -163,20 +136,6 @@ html, body {
   cursor: not-allowed;
 }
 
-/* Footer Section */
-.login-card-footer {
-  margin-top: 28px;
-  text-align: center;
-}
-
-.login-card-footer p {
-  font-size: 11px;
-  color: #94A3B8;
-  margin: 0;
-  line-height: 1.5;
-}
-
-/* Loading Spinner Core Component */
 .auth-loading-spinner {
   width: 16px;
   height: 16px;
@@ -191,11 +150,6 @@ html, body {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
-
-/* ================= MODALS =================
-   Added back in — these classes are used by the Forgot Password,
-   Verify OTP, and Reset Password modals in login.html but were
-   missing from this stylesheet. */
 
 .modal-overlay {
     position: fixed;
@@ -273,7 +227,7 @@ html, body {
     background: #1D4ED8;
 }
 
-/* ================= OTP BOX STYLES ================= */
+/* ===== OTP Boxes ===== */
 .otp-container {
   display: flex;
   gap: 10px;
@@ -320,7 +274,7 @@ html, body {
   margin-bottom: 15px;
 }
 
-/* ================= TOAST NOTIFICATION ================= */
+/* ===== Toast ===== */
 .toast-container {
   position: fixed;
   top: 30px;
@@ -397,7 +351,6 @@ html, body {
   color: #4B5563;
 }
 
-/* Responsive toast */
 @media (max-width: 640px) {
   .toast-container {
     top: 15px;
@@ -410,8 +363,8 @@ html, body {
     padding: 14px 16px;
   }
 }
-/* Container must be relative so the eye can position itself absolutely */
-/* 1. Anchor the eye relative to this wrapper instead of the whole screen */
+
+/* Password eye toggle */
 .password-wrapper {
   position: relative;
   width: 100%;
@@ -419,13 +372,11 @@ html, body {
   align-items: center;
 }
 
-/* 2. Give the input some breathing room on the right so text doesn't hide behind the eye */
 .password-wrapper input {
   width: 100%;
-  padding-right: 40px !important; /* Adjust if your input already has custom padding */
+  padding-right: 40px !important;
 }
 
-/* 3. Lock the eye button to the right side of the input */
 .toggle-password {
   position: absolute;
   right: 12px;
@@ -437,17 +388,64 @@ html, body {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  color: #9CA3AF; /* Subtle gray */
+  color: #9CA3AF;
   z-index: 10;
   transition: color 0.15s ease;
 }
 
-/* Quick hover effect */
 .toggle-password:hover {
-  color: #4B5563; /* Darker gray on hover */
+  color: #4B5563;
 }
 
-/* Clean up any default active/focus outlines on the eye button */
 .toggle-password:focus {
   outline: none;
+}
+
+/* ===== Demo credentials hint ===== */
+.demo-hint {
+  margin: 6px 0 14px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: rgba(37, 99, 235, 0.06);
+  border: 1px dashed rgba(37, 99, 235, 0.45);
+  text-align: center;
+  line-height: 1.6;
+}
+
+.demo-hint-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1D4ED8;
+  margin-bottom: 6px;
+}
+
+.demo-hint-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  color: #334155;
+}
+
+.demo-hint-row span {
+  color: #64748B;
+  font-weight: 500;
+}
+
+.demo-hint-row code {
+  background: rgba(37, 99, 235, 0.12);
+  padding: 2px 8px;
+  border-radius: 5px;
+  font-family: 'Courier New', monospace;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #1D4ED8;
+}
+
+.demo-hint-sub {
+  margin-top: 8px;
+  font-size: 11.5px;
+  color: #94A3B8;
+  font-style: italic;
 }
